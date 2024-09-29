@@ -6,45 +6,6 @@ class User {
     -String Password
     +Date created_at
     +Date updated_at
-    +void login()
-}
-
-class Place {
-    +UUID id
-    +String name
-    +String location
-    +Float price
-    +Date created_at
-    +Date updated_at
-    +Float calculatePrice()
-}
-
-class Review {
-    +UUID id
-    +int rating
-    +String comment
-    +Date created_at
-    +Date updated_at
-}
-
-class Amenity {
-    +UUID id
-    +String type
-    +Date created_at
-    +Date updated_at
-}
-
-User "1" --> "*" Review : writes
-Place "1" --> "*" Review : receives
-Place "1" o-- "*" Amenity : contains
-classDiagram
-class User {
-    +UUID id
-    +String email
-    +String name
-    -String Password
-    +Date created_at
-    +Date updated_at
     +create_user()
     +edit_user()
     +delete_user()
