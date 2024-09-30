@@ -2,7 +2,7 @@
 
 ## Introduction
 
-This document provides a comprehensive technical overview of the HBnB project, outlining its architecture, business logic, and interactions between components. The goal is to offer a clear blueprint for the development process, using UML diagrams to represent key parts of the system. 
+This document provides a comprehensive technical overview of the HBnB project, outlining its architecture, business logic, and interactions between components. The goal is to offer a clear blueprint for the development process, using UML diagrams to represent key parts of the system.
 
 ## High-Level Architecture
 
@@ -31,13 +31,14 @@ class PersistenceLayer {
 }
 PresentationLayer --> BusinessLogicLayer : Facade Pattern
 BusinessLogicLayer --> PersistenceLayer : Database Operations
+```
 
-*Explanation:*  
+_Explanation:_
+
 - **Presentation Layer**: Manages the user-facing services and APIs.
 - **Business Logic Layer**: Contains the application’s core entities and logic.
 - **Persistence Layer**: Handles database interactions.
 - **Facade Pattern**: Acts as an interface to streamline communication between layers.
-```
 
 ## Business Logic Layer
 
@@ -106,7 +107,8 @@ Place "1" --> "*" Review : receives
 Place "1" o-- "*" Amenity : contains
 ```
 
-*Explanation:*  
+_Explanation:_
+
 - **User**: Represents the system’s users, with attributes like email, name, and methods for login, create, edit, and delete operations.
 - **Place**: Contains details of a property (e.g., location, price), and has methods for creating, editing, and calculating prices.
 - **Review**: Captures user feedback for places, with attributes for rating and comment, and methods for managing reviews.
