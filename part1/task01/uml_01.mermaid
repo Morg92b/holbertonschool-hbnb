@@ -1,0 +1,62 @@
+---
+config:
+  theme: default
+---
+classDiagram
+class User {
+    -UUID4 ID 
+    -string first_name
+    -string last_name
+    -string email
+    -string password
+    -boolean administrator
+    +datetime datetime_creation 
+    +datetime datetime_update 
+    +register()
+    +update()
+    +delete()
+}
+class Place {
+    -UUID4 ID
+    -string title
+    -string description
+    -float price
+    -float latitude
+    -float longitude
+    -UUID4 ownerID
+    -list amenity
+    -list review 
+    +datetime datetime_creation 
+    +datetime datetime_update 
+    +create()
+    +update()
+    +delete()
+    +list()
+}
+class Review {
+    -UUID4 ID
+    -UUID4 placeID
+    -UUID4 userID
+    -int rating
+    -string comment
+    +datetime datetime_creation 
+    +datetime datetime_update 
+    +create()
+    +update()
+    +delete()
+    +list_by_place()
+}
+class Amenity {
+    -UUID4 ID
+    +string name
+    +string description
+    +datetime datetime_creation 
+    +datetime datetime_update 
+    +create()
+    +update()
+    +delete()
+    +list()
+}
+User "*" --> "*" Place : own, use
+Place "1" *-- "0..*" Review : has
+Place "1" o-- "0..*" Amenity : contain
