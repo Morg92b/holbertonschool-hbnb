@@ -5,8 +5,8 @@ class User {
     +String name
     -String Password
     -boolean administrator
-    +Date created_at
-    +Date updated_at
+    -DateTime created_at
+    -DateTime updated_at
     +create_user()
     +edit_user()
     +delete_user()
@@ -21,8 +21,8 @@ class Place {
     +Float price
     +list Amenity
     +list Review
-    +Date created_at
-    +Date updated_at
+    -DateTime created_at
+    -DateTime updated_at
     +create_place()
     +edit_place()
     +delete_place()
@@ -34,8 +34,8 @@ class Review {
     +UUID4 id
     +Float rating
     +String comment
-    +Date created_at
-    +Date updated_at
+    -DateTime created_at
+    -DateTime updated_at
     +create_review()
     +edit_review()
     +delete_review()
@@ -45,8 +45,8 @@ class Review {
 class Amenity {
     +UUID4 id
     +String type
-    +Date created_at
-    +Date updated_at
+    -DateTime created_at
+    -DateTime updated_at
     +create_amenity()
     +edit_amenity()
     +delete_amenity()
