@@ -8,8 +8,8 @@ participant API
 participant BusinessLogic
 participant Database
 User->>+API: API Call (Fetching a List of Places)
-API->>+BusinessLogic: Validate and Process Request
-BusinessLogic->>+Database: Save Data
-Database-->>-BusinessLogic: Confirm Save
+API->>+BusinessLogic: Validate and Process Retrieve Request
+BusinessLogic->>+Database: Search places
+Database-->>-BusinessLogic: Return a list of places
 BusinessLogic-->>-API: Return Success/Failure
-API-->>-User: Return Success/Failure
+API-->>-User: Return a list of places

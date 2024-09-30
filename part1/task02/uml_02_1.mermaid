@@ -8,7 +8,7 @@ participant API
 participant BusinessLogic
 participant Database
 User->>+API: API Call (User Registration)
-API->>+BusinessLogic: Validate and Process Request
+API->>+BusinessLogic: Validate and Process Registration Request
 BusinessLogic->>+Database: Save Data
 Database-->>-BusinessLogic: Confirm Save
 BusinessLogic-->>-API: Return Success/Failure
