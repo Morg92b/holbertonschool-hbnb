@@ -4,6 +4,7 @@ class User {
     +String email
     +String name
     -String Password
+    -boolean administrator
     +Date created_at
     +Date updated_at
     +create_user()
@@ -17,23 +18,27 @@ class Place {
     +String name
     +String location
     +Float price
+    +list Amenity
+    +list Review
     +Date created_at
     +Date updated_at
     +create_place()
     +edit_place()
     +delete_place()
     +Float calculatePrice()
+    +list()
 }
 
 class Review {
     +UUID id
-    +int rating
+    +Float rating
     +String comment
     +Date created_at
     +Date updated_at
     +create_review()
     +edit_review()
     +delete_review()
+    +list_by_place()
 }
 
 class Amenity {
@@ -44,6 +49,7 @@ class Amenity {
     +create_amenity()
     +edit_amenity()
     +delete_amenity()
+    +list()
 }
 
 User "1" --> "*" Review : writes
