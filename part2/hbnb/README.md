@@ -55,7 +55,7 @@ To set up and run this project, follow these steps:
 1. **Clone the repository:**
 
    ```bash
-   git clone https://github.com/yourusername/hbnb.git
+   git clone https://github.com/Morg92b/holbertonschool-hbnb.git
    cd hbnb
    ```
 
