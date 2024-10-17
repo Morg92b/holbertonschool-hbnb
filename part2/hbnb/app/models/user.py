@@ -1,7 +1,7 @@
 import uuid
 import re
 from datetime import datetime
-from base_model import BaseModel
+from .base_model import BaseModel
 
 class User(BaseModel):
     def __init__(self, first_name, last_name, email, is_admin=False):
@@ -24,4 +24,15 @@ class User(BaseModel):
         super().save()
 
     def update(self, data):
+
+        print(data)
+        if 'first_name' in data:
+            self.first_name = data['first_name']
+        if 'last_name' in data:
+            self.last_name = data['last_name']
+        if 'email' in data and re.match(r"[^@]+@[^@]+\.[^@]+", data['email']):
+            self.email = data['email']
         super().update(data)
+
+
+        
