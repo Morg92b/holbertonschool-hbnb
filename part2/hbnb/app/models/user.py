@@ -24,8 +24,7 @@ class User(BaseModel):
         super().save()
 
     def update(self, data):
-
-        print(data)
+        
         if 'first_name' in data:
             self.first_name = data['first_name']
         if 'last_name' in data:
