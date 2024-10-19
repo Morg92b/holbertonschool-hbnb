@@ -1,5 +1,40 @@
-from base_model import BaseModel
+from app.models.base_model import BaseModel
 import re
+
+
+class ValidationError(Exception):
+    pass
+
+
+class Validator:
+    @staticmethod
+    def validate_presence(value, field_name):
+        if not value:
+            raise ValidationError(f"{field_name} is required")
+
+    @staticmethod
+    def validate_length(value, field_name, max_length):
+        if len(value) > max_length:
+            raise ValidationError(f"{field_name} must be less than or equal to {max_length} characters")
+
+    @staticmethod
+    def validate_email(value):
+        regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+        if not re.fullmatch(regex, value):
+            raise ValidationError("Invalid Email")
+
+    @staticmethod
+    def validate_user(user_data):
+        """ Validating user attributes """
+        for key, value in user_data.items():
+            if key == 'first_name':
+                Validator.validate_presence(value, "First name")
+                Validator.validate_length(value, "First name", 50)
+            elif key == 'last_name':
+                Validator.validate_presence(value, "Last name")
+                Validator.validate_length(value, "Last name", 50)
+            elif key == 'email':
+                Validator.validate_email(value)
 
 
 class User(BaseModel):
@@ -16,49 +51,9 @@ class User(BaseModel):
             "email": self.email
         }
 
-        User.verification_attr(user_data)
-
-        # if not self.first_name:
-        #     raise ValueError("first_name is required")
-
-        # if len(self.first_name) > 50:
-        #     raise ValueError("first_name must be less than or equal to 50 characters")
-
-        # if not self.last_name:
-        #     raise ValueError("last_name is required")
-
-        # if len(self.last_name) > 50:
-        #     raise ValueError("last_name must be less than or equal to 50 characters")
-
-        # regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
-        # if not (re.fullmatch(regex, self.email)):
-        #     raise ValueError("Invalid Email")
-
-    @classmethod
-    def verification_attr(cls, dict_attr):
-        if "first_name" in dict_attr:
-            if not dict_attr["first_name"]:
-                raise ValueError("first_name is required")
-
-            if len(dict_attr["first_name"]) > 50:
-                raise ValueError("first_name must be less than or equal to 50 characters")
-
-        if "last_name" in dict_attr:
-            if not dict_attr["last_name"]:
-                raise ValueError("last_name is required")
-
-            if len(dict_attr["last_name"]) > 50:
-                raise ValueError("last_name must be less than or equal to 50 characters")
-
-        if "email" in dict_attr:
-            regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
-            if not (re.fullmatch(regex, dict_attr["email"])):
-                raise ValueError("Invalid Email")
-
-
-    def save(self):
-        super().save()
+        Validator.validate_user(user_data)
 
     def update(self, data):
-        User.verification_attr(data)
+        """ Validating the update data and update them """
+        Validator.validate_user(data)
         super().update(data)
