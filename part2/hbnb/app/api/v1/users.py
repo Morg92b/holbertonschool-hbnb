@@ -21,17 +21,6 @@ facade = HBnBFacade()
 
 @api.route('/')
 class UserList(Resource):
-    @api.response(200, 'List of Users retrieved successfully')
-    @api.response(404, 'List of Users not found')
-    def get(self):
-        """Get list of users"""
-        user_list = facade.get_all_user()
-        if not user_list:
-            return {'error': 'List of Users not found'}, 404
-
-        return [{'id': user.id, 'first_name': user.first_name, 'last_name': user.last_name, 'email': user.email} for user in user_list], 200
-
-
     @api.expect(user_model1, validate=True)
     @api.response(201, 'User successfully created')
     @api.response(400, 'Email already registered')
@@ -54,6 +43,16 @@ class UserList(Resource):
 
         except Exception as e:
             return {'error': 'An unexpected error occurred: ' + str(e)}, 500
+
+    @api.response(200, 'List of Users retrieved successfully')
+    @api.response(404, 'List of Users not found')
+    def get(self):
+        """Get list of users"""
+        user_list = facade.get_all_user()
+        if not user_list:
+            return {'error': 'List of Users not found'}, 404
+
+        return [{'id': user.id, 'first_name': user.first_name, 'last_name': user.last_name, 'email': user.email} for user in user_list], 200
 
 
 @api.route('/<user_id>')
@@ -87,4 +86,4 @@ class UserResource(Resource):
             return {'Validationerror': str(e)}, 400
 
         except Exception as e:
-            return {'Except error': 'An unexpected error occurred: ' + str(e)}, 500
+            return {'error': 'An unexpected error occurred: ' + str(e)}, 500
