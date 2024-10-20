@@ -19,3 +19,12 @@ class Amenity(BaseModel):
                     raise ValueError("The equipment name must not exceed 50 characters")
                 self.name = value
         super().update(data)
+
+    
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'created_at': self.created_at,
+            'updated_at': self.updated_at,
+        }
