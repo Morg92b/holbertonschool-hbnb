@@ -60,9 +60,4 @@ class UserResource(Resource):
             updated_user = facade.update_user(user_id, user_data)
         except Exception as e:
             return {"Error": str(e)}, 500
-        return {
-            'id': updated_user['id'],
-            'first_name': updated_user['first_name'],
-            'last_name': updated_user['last_name'],
-            'email': updated_user['email']
-        }, 200
+        return updated_user, 200

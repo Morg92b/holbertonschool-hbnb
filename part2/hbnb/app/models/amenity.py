@@ -25,6 +25,4 @@ class Amenity(BaseModel):
         return {
             'id': self.id,
             'name': self.name,
-            'created_at': self.created_at,
-            'updated_at': self.updated_at,
         }
