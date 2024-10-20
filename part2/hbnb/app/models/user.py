@@ -6,7 +6,7 @@ class ValidationError(Exception):
     pass
 
 
-class Validator:
+class Validator_user:
     @staticmethod
     def validate_presence(value, field_name):
         if not value:
@@ -28,13 +28,13 @@ class Validator:
         """ Validating user attributes """
         for key, value in user_data.items():
             if key == 'first_name':
-                Validator.validate_presence(value, "First name")
-                Validator.validate_length(value, "First name", 50)
+                Validator_user.validate_presence(value, "First name")
+                Validator_user.validate_length(value, "First name", 50)
             elif key == 'last_name':
-                Validator.validate_presence(value, "Last name")
-                Validator.validate_length(value, "Last name", 50)
+                Validator_user.validate_presence(value, "Last name")
+                Validator_user.validate_length(value, "Last name", 50)
             elif key == 'email':
-                Validator.validate_email(value)
+                Validator_user.validate_email(value)
 
 
 class User(BaseModel):
@@ -51,9 +51,9 @@ class User(BaseModel):
             "email": self.email
         }
 
-        Validator.validate_user(user_data)
+        Validator_user.validate_user(user_data)
 
     def update(self, data):
         """ Validating the update data and update them """
-        Validator.validate_user(data)
+        Validator_user.validate_user(data)
         super().update(data)
