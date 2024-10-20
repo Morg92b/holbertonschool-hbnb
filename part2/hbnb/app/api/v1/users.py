@@ -79,7 +79,7 @@ class UserResource(Resource):
             return {'error': 'User not found'}, 404
 
         try:
-            new_user = facade.put_user(user_id, user_data)
+            new_user = facade.update_user(user_id, user_data)
             return {'id': new_user.id, 'first_name': new_user.first_name, 'last_name': new_user.last_name, 'email': new_user.email}, 201
 
         except ValidationError as e:
