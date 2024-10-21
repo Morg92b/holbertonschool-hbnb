@@ -38,12 +38,13 @@ class Validator_user:
 
 
 class User(BaseModel):
-    def __init__(self, first_name, last_name, email, is_admin=False):
+    def __init__(self, first_name, last_name, email, is_admin=False, is_owner=False):
         super().__init__()
         self.first_name = first_name
         self.last_name = last_name
         self.email = email
         self.is_admin = is_admin
+        self.is_owner = is_owner
 
         user_data = {
             "first_name": self.first_name,
