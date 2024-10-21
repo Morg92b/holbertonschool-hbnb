@@ -78,6 +78,11 @@ class UserResource(Resource):
         if not user:
             return {'error': 'User not found'}, 404
 
+        # Simulate email uniqueness check (to be replaced by real validation with persistence)
+        existing_user = facade.get_user_by_email(user_data['email'])
+        if existing_user:
+            return {'error': 'Email already registered for other user'}, 400
+
         try:
             new_user = facade.update_user(user_id, user_data)
             return {'id': new_user.id, 'first_name': new_user.first_name, 'last_name': new_user.last_name, 'email': new_user.email}, 201
