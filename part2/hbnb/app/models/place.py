@@ -1,15 +1,57 @@
-from base_model import BaseModel
+from app.models.base_model import BaseModel
+
+
+class ValidationError(Exception):
+    pass
+
+
+class Validator_place:
+    @staticmethod
+    def validate_presence(value, field_name):
+        if not value:
+            raise ValidationError(f"{field_name} is required")
+
+    @staticmethod
+    def validate_length(value, field_name, max_length):
+        if len(value) > max_length:
+            raise ValidationError(f"{field_name} must be less than or equal to {max_length} characters")
+
+    @staticmethod
+    def validate_value(value, field_name, min_value, max_value):
+        if value < min_value or value > max_value:
+            raise ValidationError(f"{field_name} must be within the range of {min_value} to {max_value}")
+
+    @staticmethod
+    def validate_value_positive(value, field_name):
+        if value <= 0:
+            raise ValidationError(f"{field_name} must be a positive value")
+
+    @staticmethod
+    def validate_place(place_data):
+        """ Validating place attributes """
+        for key, value in place_data.items():
+            if key == 'title':
+                Validator_place.validate_presence(value, "title")
+                Validator_place.validate_length(value, "title", 100)
+            elif key == 'price':
+                Validator_place.validate_value_positive(value, "price")
+            elif key == 'latitude':
+                Validator_place.validate_value(value, "latitude", -90.0, 90.0)
+            elif key == 'longitude':
+                Validator_place.validate_value(value, "longitude", -180.0, 180.0)
+            elif key == 'owner_id':
+                Validator_place.validate_presence(value, "owner_id")
 
 
 class Place(BaseModel):
-    def __init__(self, title, description, price, latitude, longitude, owner):
+    def __init__(self, title, description, price, latitude, longitude, owner_id):
         super().__init__()
         self.title = title
         self.description = description
         self.price = price
         self.latitude = latitude
         self.longitude = longitude
-        self.owner = owner
+        self.owner_id = owner_id
         self.reviews = []  # List to store related reviews
         self.amenities = []  # List to store related amenities
 
@@ -19,54 +61,10 @@ class Place(BaseModel):
             "price": self.price,
             "latitude": self.latitude,
             "longitude": self.longitude,
-            "owner": self.owner
+            "owner_id": self.owner_id
         }
 
-        Place.verification_attr(place_data)
-
-        # if not self.title:
-        #     raise ValueError("title is required")
-
-        # if len(self.title) > 100:
-        #     raise ValueError("title must be less than or equal to 100 characters")
-
-        # if self.price <= 0:
-        #     raise ValueError("price must be a positive value")
-        
-        # if self.latitude < -90 or self.latitude > 90:
-        #     raise ValueError("latitude must be within the range of -90.0 to 90.0")
-
-        # if self.longitude < -180 or self.longitude > 180:
-        #     raise ValueError("longitude must be within the range of -180.0 to 180.0")
-
-        # if not self.owner:
-        #     raise ValueError("owner is required")
-
-    @classmethod
-    def verification_attr(cls, dict_attr):
-        if "title" in dict_attr:
-            if not dict_attr["title"]:
-                raise ValueError("title is required")
-
-            if len(dict_attr["title"]) > 100:
-                raise ValueError("title must be less than or equal to 100 characters")
-
-        if "price" in dict_attr:
-            if dict_attr["price"] <= 0:
-                raise ValueError("price must be a positive value")
-
-        if "latitude" in dict_attr:
-            if dict_attr["latitude"] < -90 or dict_attr["latitude"]  > 90:
-                raise ValueError("latitude must be within the range of -90.0 to 90.0")
-
-        if "longitude" in dict_attr:
-            if dict_attr["longitude"] < -180 or dict_attr["longitude"]  > 180:
-                raise ValueError("longitude must be within the range of -180.0 to 180.0")
-
-        if "owner" in dict_attr:
-            if not dict_attr["owner"]:
-                raise ValueError("owner is required")
-
+        Validator_place.validate_place(place_data)
 
     def add_review(self, review):
         """Add a review to the place."""
@@ -76,9 +74,6 @@ class Place(BaseModel):
         """Add an amenity to the place."""
         self.amenities.append(amenity)
 
-    def save(self):
-        super().save()
-
     def update(self, data):
-        Place.verification_attr(data)
+        Validator_place.validate_place(data)
         super().update(data)
