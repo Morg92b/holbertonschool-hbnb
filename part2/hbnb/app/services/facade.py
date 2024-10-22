@@ -1,6 +1,7 @@
 from app.persistence.repository import InMemoryRepository
 from app.models.user import User, Validator_user
 from app.models.amenity import Amenity, Validator_amenity
+from app.models.place import Place, Validator_place
 
 class HBnBFacade:
     def __init__(self):
@@ -24,7 +25,7 @@ class HBnBFacade:
         """ Placeholder method for geting the all user's infomation """
         return self.user_repo.get_all()
 
-    def put_user(self, user_id, data):
+    def update_user(self, user_id, data):
         """ Placeholder method for updating the user infomation"""
         Validator_user.validate_user(data)
         self.user_repo.update(user_id, data)
@@ -55,7 +56,23 @@ class HBnBFacade:
         self.amenity_repo.update(amenity_id, amenity_data)
         return self.get_amenity(amenity_id)
 
-    # Placeholder method for fetching a place by ID
+    # Placeholder method for create, read, update the place
+    def create_place(self, place_data):
+        """ Placeholder for logic to create a place, including validation for price, latitude, and longitude """
+        place = Place(**place_data)
+        self.place_repo.add(place)
+        return place
+
     def get_place(self, place_id):
-        # Logic will be implemented in later tasks
-        pass
+        """ Placeholder for logic to retrieve a place by ID, including associated owner and amenities """
+        return self.place_repo.get(place_id)
+
+    def get_all_places(self):
+        """ Placeholder for logic to retrieve all places """
+        return self.place_repo.get_all()
+
+    def update_place(self, place_id, place_data):
+        """ Placeholder for logic to update a place """
+        Validator_place.validate_place(place_data)
+        self.place_repo.update(place_id, place_data)
+        return self.get_place(place_id)
