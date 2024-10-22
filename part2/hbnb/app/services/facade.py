@@ -2,6 +2,7 @@ from app.persistence.repository import InMemoryRepository
 from app.models.user import User
 from app.models.amenity import Amenity
 from app.models.place import Place
+from app.models.review import Review
 from flask import jsonify
 
 class HBnBFacade:
@@ -133,3 +134,56 @@ class HBnBFacade:
             place.add_amenity(amenity)
 
         return place.to_dict()
+
+    """REVIEWS CONFIG"""
+    def create_review(self, review_data):
+        """Checking DATA"""
+        user = self.user_repo.get(review_data.get('user_id'))
+        place = self.place_repo.get(review_data.get('place_id'))
+        if not user:
+            raise ValueError("User not found")
+        if not place:
+            raise ValueError("Place not found")
+        """New review"""
+        new_review = Review(
+            text=review_data['text'],
+            rating=review_data['rating'],
+            place=place,
+            user=user
+            )
+        self.review_repo.add(new_review)
+        return new_review
+
+    def get_review(self, review_id):
+        review = self.review_repo.get(review_id)
+        if not review:
+            raise ValueError("Review not found")
+        return review
+
+    def get_all_reviews(self):
+        return self.review_repo.get_all()
+
+    def get_reviews_by_place(self, place_id):
+        place = self.place_repo.get(place_id)
+        if not place:
+            raise ValueError("Place not found")
+        return self.review_repo.get_by_attribute('place_id', place_id)
+
+    def update_review(self, review_id, review_data):
+        review = self.get_review(review_id)
+        if not review:
+            raise ValueError("Review not found")
+
+        
+        new_text = review_data.get('text')
+        new_rating = review_data.get('rating')
+        review.update_review(review_data, new_text, new_rating)
+        self.review_repo.update(review_id, review)
+
+        return review
+
+    def delete_review(self, review_id):
+        review = self.get_review(review_id)
+        if not review:
+            raise ValueError("Review not found")
+        self.review_repo.delete(review_id)
