@@ -93,20 +93,20 @@ class HBnBFacade:
             place.add_amenity(amenity)
 
         print(f"Place created successfully: {place.id}")
-        print(f"la plafce est laaaaaaaaaaaaaaaaa", (place))
         return place.to_dict()
 
 
-    def get_place(self, place_id): #noworks
+    def get_place(self, place_id): #works
         place = self.place_repo.get(place_id)
         print(f"voici la place", place)
         if place:
-            owner = self.user_repo.get(place.owner.id)  # Get the owner
-            print(f"voici la owner", owner)
+            owner_id = place.id
+            owner = self.user_repo.get(owner_id)  # Get the owner
+            print(f"voici la owner", owner_id)
             if owner:
-                place.owner = owner.to_dict()
+                place.owner = owner
             place.amenities = [self.amenity_repo.get(amenity_id).to_dict() for amenity_id in place.amenities]
-            return place.to_dict()
+            return place
         return None
 
     def get_all_places(self): #works
@@ -120,11 +120,10 @@ class HBnBFacade:
     
         amenities = place_data.pop('amenities', [])
         place.update(place_data)
-        self.place_repo.update(place_id, place)
         
-        if isinstance(place.owner, dict):
-            raise ValueError("Owner must be an object of User")
-        self.place_repo.update(place_id, place)
+        # if isinstance(place.owner, dict):
+        #     raise ValueError("Owner must be an object of User")
+        # self.place_repo.update(place_id, place)
         
         place.amenities = []
         for amenity_id in amenities:
