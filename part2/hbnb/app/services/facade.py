@@ -2,6 +2,10 @@ from app.persistence.repository import InMemoryRepository
 from app.models.user import User, Validator_user
 from app.models.amenity import Amenity, Validator_amenity
 from app.models.place import Place, Validator_place
+from app.models.place import ValidationError
+#from app.api.v1.users import UserResource
+# from app.api.v1.amenities import AmenityResource
+
 
 class HBnBFacade:
     def __init__(self):
@@ -59,9 +63,53 @@ class HBnBFacade:
     # Placeholder method for create, read, update the place
     def create_place(self, place_data):
         """ Placeholder for logic to create a place, including validation for price, latitude, and longitude """
-        place = Place(**place_data)
-        self.place_repo.add(place)
-        return place
+
+        try:
+
+            # check id_owner
+            #from app.api.v1.users import UserResource
+            # owner_dict = self.user_repo.get(place_data['owner_id'])
+            # if not owner_dict:
+            #     raise ValidationError('error: Owner not found')
+        
+            # if owner_dict['is_owner'] is False:
+            #     raise ValidationError('error: This id user is not Owner')
+
+            place = Place(**place_data)
+            owner_dict = self.user_repo.get(place.owner_id)
+            if not owner_dict:
+                raise ValidationError('error: Owner not found')
+        
+            if owner_dict['is_owner'] is False:
+                raise ValidationError('error: This id user is not Owner')
+            
+            # check id_amenity
+            if 'amenities' in place_data:
+                amenity_list = place_data['amenities']
+
+                #from app.api.v1.amenities import AmenityResource
+                for amenity_id in amenity_list:
+                    amenity_dict = self.amenity_repo.get(amenity_id)
+                    if not amenity_dict:
+                        raise ValidationError(f'error: This id ({amenity_id}) not found in Amenity data')
+                    place.amenities.append(amenity_dict)
+
+            # if 'amenities' in place_data:
+            #     amenity_list = place_data['amenities']
+
+            #     for amenity_id in amenity_list:
+            #         amenity_dict = 
+            #         place.amenities.append(amenity_id)
+
+            self.place_repo.add(place)
+            return place
+    
+        except ValidationError as e:
+            return {'Validationerror': str(e)}, 400
+
+        except Exception as e:
+            return {'error': 'An unexpected error occurred: ' + str(e)}, 500
+
 
     def get_place(self, place_id):
         """ Placeholder for logic to retrieve a place by ID, including associated owner and amenities """
