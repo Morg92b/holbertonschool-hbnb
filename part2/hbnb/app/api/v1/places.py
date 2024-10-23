@@ -2,6 +2,7 @@ from flask_restx import Namespace, Resource, fields
 from app.services.facade import HBnBFacade
 from app.models.place import ValidationError
 from app.api.v1.users import UserResource
+from app.api.v1.amenities import AmenityResource
 
 api = Namespace('places', description='Place operations')
 
@@ -52,30 +53,41 @@ class PlaceList(Resource):
         """Register a new place"""
         place_data = api.payload
 
-        try:
-            owner_dict = UserResource.get(self, place_data['owner_id'])
-            if owner_dict[1] == 404:
-                raise ValidationError('error: Owner not found')
+        # try:
+        #     # check id_owner
+        #     owner_dict = UserResource.get(self, place_data['owner_id'])
+        #     if owner_dict[1] == 404:
+        #         raise ValidationError('error: Owner not found')
         
-            if owner_dict[0]['is_owner'] is False:
-                raise ValidationError('error: This id user is not Owner')
+        #     if owner_dict[0]['is_owner'] is False:
+        #         raise ValidationError('error: This id user is not Owner')
+            
+        #     # check id_amenity
+        #     if 'amenities' in place_data:
+        #         amenity_list = place_data['amenities']
 
-            new_place = facade.create_place(place_data)
+        #         for amenity_id in amenity_list:
+        #             amenity_dict = AmenityResource.get(self, amenity_id)
+        #             if amenity_dict[1] == 404:
+        #                 raise ValidationError(f'error: This id ({amenity_id}) not found in Amenity data')
 
-            return {'id': new_place.id,
-                        'title': new_place.title,
-                        'description': new_place.description,
-                        'price': new_place.price,
-                        'latitude': new_place.latitude,
-                        'longitude': new_place.longitude,
-                        'owner_id': new_place.owner_id
-                    }, 201
+        new_place = facade.create_place(place_data)
+
+        return {'id': new_place.id,
+                'title': new_place.title,
+                'description': new_place.description,
+                'price': new_place.price,
+                'latitude': new_place.latitude,
+                'longitude': new_place.longitude,
+                'owner_id': new_place.owner_id,
+                'amenities': new_place.amenities
+        }, 201
         
-        except ValidationError as e:
-            return {'Validationerror': str(e)}, 400
+        # except ValidationError as e:
+        #     return {'Validationerror': str(e)}, 400
 
-        except Exception as e:
-            return {'error': 'An unexpected error occurred: ' + str(e)}, 500
+        # except Exception as e:
+        #     return {'error': 'An unexpected error occurred: ' + str(e)}, 500
 
     @api.response(200, 'List of places retrieved successfully')
     @api.response(400, 'Invalid input data')
