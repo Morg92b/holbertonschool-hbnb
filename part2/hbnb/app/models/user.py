@@ -34,6 +34,7 @@ class Validator_user:
                 Validator_user.validate_presence(value, "Last name")
                 Validator_user.validate_length(value, "Last name", 50)
             elif key == 'email':
+                Validator_user.validate_presence(value, "Email")
                 Validator_user.validate_email(value)
 
 
