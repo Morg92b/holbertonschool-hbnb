@@ -41,7 +41,11 @@ The project is organized into multiple layers, each handling a specific responsi
 ### Key Components
 
 - **app/**: Contains the core application logic, including API routes, models, services, and the persistence layer.
-- **api/**: Handles API endpoints, organized by version (`v1/`).
+- **api/**: Handles API endpoints, organized by version (`v1/`). The following API endpoints are implemented:
+  - **users.py**: API for user operations (create, update, retrieve).
+  - **places.py**: API for managing places (CRUD operations).
+  - **reviews.py**: API for handling reviews associated with places and users.
+  - **amenities.py**: API for managing amenities available for places.
 - **models/**: Defines the business logic for managing users, places, reviews, and amenities.
 - **services/**: Implements the Facade design pattern to simplify interactions between the API, business logic, and persistence layers.
 - **persistence/**: Provides an in-memory repository for object storage and validation. This will be replaced with a database solution in future updates.
