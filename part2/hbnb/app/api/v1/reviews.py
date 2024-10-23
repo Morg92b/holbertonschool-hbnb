@@ -90,6 +90,8 @@ class PlaceReviewList(Resource):
         facade = current_app.config['FACADE']
         try:
             reviews = facade.get_reviews_by_place(place_id)
+            if not reviews:
+                return {"Error": "No reviews found for this place"}, 404
             return [review.to_dict() for review in reviews], 200
         except ValueError:
             api.abort(404, f"Place with ID {place_id} not found")

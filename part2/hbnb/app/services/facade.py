@@ -106,7 +106,16 @@ class HBnBFacade:
             print(f"voici la owner", owner_id)
             if owner:
                 place.owner = owner
-            place.amenities = [self.amenity_repo.get(amenity_id).to_dict() for amenity_id in place.amenities]
+            amenities = []
+            if place.amenities:
+                for amenity_id in place.amenities:
+                    amenity = self.amenity_repo.get(amenity_id)
+                    if amenity:  # Vérifie si l'amenity existe
+                        amenities.append(amenity.to_dict())
+                    else:
+                        print(f"Amenity with ID {amenity_id}")
+            if amenities:
+                place.amenities = amenities  # Ajoute les amenities trouvés
             return place
         return None
 
@@ -167,7 +176,8 @@ class HBnBFacade:
         place = self.place_repo.get(place_id)
         if not place:
             raise ValueError("Place not found")
-        return self.review_repo.get_by_attribute('place_id', place_id)
+        reviews = [review for review in self.review_repo._storage.values() if review.place.id == place_id]
+        return reviews
 
     def update_review(self, review_id, review_data):
         review = self.get_review(review_id)

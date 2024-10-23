@@ -8,6 +8,7 @@ class Review(BaseModel):
         self.text = text
         self.rating = rating
         self.place = place
+        self.place_id = place.id
         self.user = user
         if not (1 <= self.rating <= 5):
             raise ValueError("The new score must be between 1 and 5.")
