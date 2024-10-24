@@ -30,11 +30,12 @@ class HBnBFacade:
 
 
     def get_user(self, user_id):
-        user = self.user_repo.get(user_id)
-        if user:
-            return user
-        else:
-            return jsonify({"Error": "User not found"}), 404
+        return self.user_repo.get(user_id)
+        # user = self.user_repo.get(user_id)
+        # if user:
+        #     return user
+        # else:
+        #     return jsonify({"Error": "User not found"}), 404
 
     def get_user_by_email(self, email):
         return self.user_repo.get_by_attribute('email', email)
