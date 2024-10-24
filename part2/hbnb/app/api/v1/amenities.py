@@ -30,6 +30,9 @@ class AmenityList(Resource):
         """Retrieve a list of all amenities"""
         facade = current_app.config['FACADE']
         amenities = facade.get_all_amenities()
+        if not amenities:
+            return {'error': 'List of amenities not found'}, 404
+
         return [amenity.to_dict() for amenity in amenities], 200  
 
 @api.route('/<amenity_id>')
