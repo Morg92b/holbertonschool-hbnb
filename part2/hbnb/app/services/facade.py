@@ -143,7 +143,7 @@ class HBnBFacade:
             raise ValueError("Owner not authorized to create places")
 
         amenities = place_data.pop('amenities', [])
-        place.update(place_data)
+        place.update(place_data, owner=owner.to_dict())
         
         # if isinstance(place.owner, dict):
         #     raise ValueError("Owner must be an object of User")
@@ -155,6 +155,8 @@ class HBnBFacade:
             if not amenity:
                 raise ValueError(f"Amenity with ID {amenity_id} not found")
             place.add_amenity(amenity)
+
+        self.place_repo.update(place_id, place)
 
         return place.to_dict()
 
