@@ -21,20 +21,7 @@ class User(BaseModel):
         self.is_owner = is_owner
 
 
-    # def save(self):
-    #     super().save()
-
     def update(self, data):
-        # if 'first_name' in data:
-        #     self.first_name = data['first_name']
-        # if 'last_name' in data:
-        #     self.last_name = data['last_name']
-        # if 'email' in data and re.match(r"[^@]+@[^@]+\.[^@]+", data['email']):
-        #     self.email = data['email']
-        # if 'is_admin' in data:
-        #     self.is_admin = data['is_admin']
-        # if 'is_owner' in data:
-        #     self.is_owner = data['is_owner']  
 
         if 'first_name' in data:
             if not data['first_name'] or len(data['first_name']) > 50:

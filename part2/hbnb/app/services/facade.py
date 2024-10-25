@@ -31,11 +31,6 @@ class HBnBFacade:
 
     def get_user(self, user_id):
         return self.user_repo.get(user_id)
-        # user = self.user_repo.get(user_id)
-        # if user:
-        #     return user
-        # else:
-        #     return jsonify({"Error": "User not found"}), 404
 
     def get_user_by_email(self, email):
         return self.user_repo.get_by_attribute('email', email)
@@ -77,15 +72,7 @@ class HBnBFacade:
             raise ValueError("Owner not authorized to create places")
 
         amenities = place_data.pop('amenities', [])
-        place_data.pop('owner_id', None)  
-
-        
-        # try:           
-        #     place = Place(owner=owner.to_dict(), **place_data)
-        #     self.place_repo.add(place)
-        # except Exception as e:
-        #     print(f"Error creating place: {str(e)}")
-        #     return None
+        place_data.pop('owner_id', None)         
 
         place = Place(owner=owner.to_dict(), **place_data)
         self.place_repo.add(place)
@@ -103,24 +90,6 @@ class HBnBFacade:
     def get_place(self, place_id): #works
         place = self.place_repo.get(place_id)
         print(f"voici la place", place)
-        # if place:
-        #     owner_id = place.id
-        #     owner = self.user_repo.get(owner_id)  # Get the owner
-        #     print(f"voici la owner", owner_id)
-        #     if owner:
-        #         place.owner = owner
-        #     amenities = []
-        #     if place.amenities:
-        #         for amenity_id in place.amenities:
-        #             amenity = self.amenity_repo.get(amenity_id)
-        #             if amenity:  # Vérifie si l'amenity existe
-        #                 amenities.append(amenity.to_dict())
-        #             else:
-        #                 print(f"Amenity with ID {amenity_id}")
-        #     if amenities:
-        #         place.amenities = amenities  # Ajoute les amenities trouvés
-        #     return place
-        # return None
 
         return place
 
@@ -144,10 +113,6 @@ class HBnBFacade:
 
         amenities = place_data.pop('amenities', [])
         place.update(place_data, owner=owner.to_dict())
-        
-        # if isinstance(place.owner, dict):
-        #     raise ValueError("Owner must be an object of User")
-        # self.place_repo.update(place_id, place)
         
         place.amenities = []
         for amenity_id in amenities:
@@ -199,7 +164,6 @@ class HBnBFacade:
         review = self.get_review(review_id)
         if not review:
             raise ValueError("Review not found")
-
         
         new_text = review_data.get('text')
         new_rating = review_data.get('rating')

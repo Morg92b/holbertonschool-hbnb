@@ -41,15 +41,8 @@ class Place(BaseModel):
             'owner': self.owner,
             'amenities': [amenity.to_dict() for amenity in self.amenities]
         }
-        
-    # def save(self):
-    #     super().save()
     
     def update(self, data, owner):
-        # allowed_keys = ['title', 'description', 'price', 'latitude', 'longitude']
-        # for key, value in data.items():
-        #     if key in allowed_keys and hasattr(self, key):
-        #         setattr(self, key, value)
 
         for key, value in data.items():
             if key == 'title':
