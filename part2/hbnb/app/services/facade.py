@@ -66,6 +66,11 @@ class HBnBFacade:
         owner = self.user_repo.get(place_data.get('owner_id')) 
         print(f"Owner ID: {place_data.get('owner_id')}, Found Owner: {owner}")  # Debug
 
+        required_fields = ['title', 'description', 'price', 'latitude', 'longitude', 'owner_id']
+        for field in required_fields:
+            if field not in place_data:
+                raise ValueError(f"Missing required field: {field}")
+
         if not owner:
             raise ValueError("Owner not found")
         if not owner.is_owner:
@@ -75,18 +80,15 @@ class HBnBFacade:
         place_data.pop('owner_id', None)  
 
         
-        required_fields = ['title', 'description', 'price', 'latitude', 'longitude']
-        for field in required_fields:
-            if field not in place_data:
-                raise ValueError(f"Missing required field: {field}")
+        # try:           
+        #     place = Place(owner=owner.to_dict(), **place_data)
+        #     self.place_repo.add(place)
+        # except Exception as e:
+        #     print(f"Error creating place: {str(e)}")
+        #     return None
 
-        try:
-            
-            place = Place(owner=owner.to_dict(), **place_data)
-            self.place_repo.add(place)
-        except Exception as e:
-            print(f"Error creating place: {str(e)}")
-            return None
+        place = Place(owner=owner.to_dict(), **place_data)
+        self.place_repo.add(place)
 
         for amenity_id in amenities:
             amenity = self.amenity_repo.get(amenity_id)
@@ -101,34 +103,45 @@ class HBnBFacade:
     def get_place(self, place_id): #works
         place = self.place_repo.get(place_id)
         print(f"voici la place", place)
-        if place:
-            owner_id = place.id
-            owner = self.user_repo.get(owner_id)  # Get the owner
-            print(f"voici la owner", owner_id)
-            if owner:
-                place.owner = owner
-            amenities = []
-            if place.amenities:
-                for amenity_id in place.amenities:
-                    amenity = self.amenity_repo.get(amenity_id)
-                    if amenity:  # Vérifie si l'amenity existe
-                        amenities.append(amenity.to_dict())
-                    else:
-                        print(f"Amenity with ID {amenity_id}")
-            if amenities:
-                place.amenities = amenities  # Ajoute les amenities trouvés
-            return place
-        return None
+        # if place:
+        #     owner_id = place.id
+        #     owner = self.user_repo.get(owner_id)  # Get the owner
+        #     print(f"voici la owner", owner_id)
+        #     if owner:
+        #         place.owner = owner
+        #     amenities = []
+        #     if place.amenities:
+        #         for amenity_id in place.amenities:
+        #             amenity = self.amenity_repo.get(amenity_id)
+        #             if amenity:  # Vérifie si l'amenity existe
+        #                 amenities.append(amenity.to_dict())
+        #             else:
+        #                 print(f"Amenity with ID {amenity_id}")
+        #     if amenities:
+        #         place.amenities = amenities  # Ajoute les amenities trouvés
+        #     return place
+        # return None
 
-    def get_all_places(self): #works
+        return place
+
+    def get_all_places(self):
         places = self.place_repo.get_all()
         return [place.to_dict() for place in places]
 
-    def update_place(self, place_id, place_data): #notworks
+    def update_place(self, place_id, place_data):
         place = self.get_place(place_id)
         if not place:
             raise ValueError("Place not found")
-    
+
+        if 'owner_id' not in place_data:
+            raise ValueError("owner id is required")
+
+        owner = self.user_repo.get(place_data.get('owner_id')) 
+        if not owner:
+            raise ValueError("Owner not found")
+        if not owner.is_owner:
+            raise ValueError("Owner not authorized to create places")
+
         amenities = place_data.pop('amenities', [])
         place.update(place_data)
         
