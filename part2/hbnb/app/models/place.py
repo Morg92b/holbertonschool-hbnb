@@ -45,8 +45,8 @@ class Place(BaseModel):
     # def save(self):
     #     super().save()
     
-    def update(self, data):
-        # allowed_keys = ['title', 'description', 'price', 'latitude', 'longitude', 'owner']
+    def update(self, data, owner):
+        # allowed_keys = ['title', 'description', 'price', 'latitude', 'longitude']
         # for key, value in data.items():
         #     if key in allowed_keys and hasattr(self, key):
         #         setattr(self, key, value)
@@ -68,10 +68,7 @@ class Place(BaseModel):
                 if not (-180.0 <= value <= 180.0):
                     raise ValueError("Longitude must be between -180.0 and 180.0")
 
-            if key == 'owner':
-                if not value:
-                    raise ValueError("The owner is required")
-
+        self.owner = owner
         super().update(data)
 
     def add_review(self, review):
