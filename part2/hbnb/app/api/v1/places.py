@@ -57,6 +57,10 @@ class PlaceList(Resource):
         """Retrieve a list of all places"""
         facade = current_app.config['FACADE']
         list_of_places = facade.get_all_places()
+
+        if not list_of_places:
+            return {'error': 'List of place not found'}, 404
+
         return list_of_places
 
 @api.route('/<place_id>')
