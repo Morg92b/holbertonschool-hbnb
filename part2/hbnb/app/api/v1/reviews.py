@@ -65,7 +65,8 @@ class ReviewResource(Resource):
         try:
             review_data = request.json
             updated_review = facade.update_review(review_id, review_data)
-            return updated_review.to_dict(), 200
+            # return updated_review.to_dict(), 200
+            return {"message": "Review updated successfully"}, 200
         except ValueError as e:
             if str(e) == "Review not found":
                 api.abort(404, str(e))
