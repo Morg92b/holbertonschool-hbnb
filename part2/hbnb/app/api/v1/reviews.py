@@ -34,6 +34,10 @@ class ReviewList(Resource):
         # Placeholder for logic to return a list of all reviews
         facade = current_app.config['FACADE']
         reviews = facade.get_all_reviews()
+
+        if not reviews:
+            return {'error': 'List of reviews not found'}, 404
+
         return [review.to_dict() for review in reviews], 200
 
 @api.route('/<review_id>')
