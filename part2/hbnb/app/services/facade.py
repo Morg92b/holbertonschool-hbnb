@@ -197,11 +197,6 @@ class HBnBFacade:
         if not review.place_id == review_data.get('place_id'):
             raise ValueError("unmatch the place registered")
 
-        # new_text = review_data.get('text')
-        # new_rating = review_data.get('rating')
-
-        # review.update_review(review_data, new_text, new_rating)
-
         review.update_review(review_data)
         self.review_repo.update(review_id, review)
 
