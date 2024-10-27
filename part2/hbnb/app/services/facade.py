@@ -127,13 +127,27 @@ class HBnBFacade:
 
     """REVIEWS CONFIG"""
     def create_review(self, review_data):
+
+        required_fields = ['text', 'rating', 'user_id', 'place_id']
+        for field in required_fields:
+            if field not in review_data:
+                raise ValueError(f"Missing required field: {field}")
+
         """Checking DATA"""
-        user = self.user_repo.get(review_data.get('user_id'))
-        place = self.place_repo.get(review_data.get('place_id'))
-        if not user:
-            raise ValueError("User not found")
-        if not place:
-            raise ValueError("Place not found")
+        if not review_data.get('user_id'):
+            raise ValueError("User id is required")
+        else:
+            user = self.user_repo.get(review_data.get('user_id'))
+            if not user:
+                raise ValueError("User not found")
+
+        if not review_data.get('place_id'):
+            raise ValueError("Place id is required")
+        else:
+            place = self.place_repo.get(review_data.get('place_id'))
+            if not place:
+                raise ValueError("Place not found")
+
         """New review"""
         new_review = Review(
             text=review_data['text'],
