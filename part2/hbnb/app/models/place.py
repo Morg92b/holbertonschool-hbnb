@@ -39,7 +39,8 @@ class Place(BaseModel):
             'latitude': self.latitude,
             'longitude': self.longitude,
             'owner': self.owner,
-            'amenities': [amenity.to_dict() for amenity in self.amenities]
+            'amenities': [amenity.to_dict() for amenity in self.amenities],
+            'reviews': [review for review in self.reviews]
         }
     
     def update(self, data, owner):
