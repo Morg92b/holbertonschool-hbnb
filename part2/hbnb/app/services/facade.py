@@ -156,6 +156,19 @@ class HBnBFacade:
             user=user
             )
         self.review_repo.add(new_review)
+
+
+        """ add review to place review_list """
+        # self.place_repo.update(place.id, place)
+
+        review_dict = {
+            'id': new_review.id,
+            'text': review_data['text'],
+            'rating': review_data['rating'],
+            'user_id': review_data['user_id']
+        }
+        place.add_review(review_dict)
+
         return new_review
 
     def get_review(self, review_id):
@@ -197,8 +210,18 @@ class HBnBFacade:
         if not review.place_id == review_data.get('place_id'):
             raise ValueError("unmatch the place registered")
 
+
         review.update_review(review_data)
         self.review_repo.update(review_id, review)
+
+        """ update review to place review list """
+        place = self.get_place(review_data.get('place_id'))
+        for index in range(len(place.reviews)):
+            if place.reviews[index]['id'] == review_id:
+                if 'text' in review_data:
+                    place.reviews[index]['text'] = review_data['text']
+                if 'rating' in review_data:
+                    place.reviews[index]['rating'] = review_data['rating']
 
         return review
 
@@ -206,4 +229,11 @@ class HBnBFacade:
         review = self.get_review(review_id)
         if not review:
             raise ValueError("Review not found")
+        
+        """ remove review from place review_list """
+        place = self.get_place(review.place_id)
+        for index in range(len(place.reviews)):
+            if place.reviews[index]['id'] == review_id:
+                del place.reviews[index]
+
         self.review_repo.delete(review_id)
