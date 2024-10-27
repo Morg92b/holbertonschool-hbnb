@@ -55,8 +55,10 @@ class AmenityResource(Resource):
         facade = current_app.config['FACADE']
         amenity_data = api.payload
         try:
-            updated_amenity = facade.update_amenity(amenity_id, amenity_data)
-            return updated_amenity.to_dict(), 200  # Utilise to_dict ici
+            # updated_amenity = facade.update_amenity(amenity_id, amenity_data)
+            # return updated_amenity.to_dict(), 200  # Utilise to_dict ici
+            facade.update_amenity(amenity_id, amenity_data)
+            return {"message": "Amenity updated successfully"}, 200
         except ValueError as e:
             return {"Error": str(e)}, 404
         except Exception as e:

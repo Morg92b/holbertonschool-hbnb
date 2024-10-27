@@ -34,6 +34,10 @@ class ReviewList(Resource):
         # Placeholder for logic to return a list of all reviews
         facade = current_app.config['FACADE']
         reviews = facade.get_all_reviews()
+
+        if not reviews:
+            return {'error': 'List of reviews not found'}, 404
+
         return [review.to_dict() for review in reviews], 200
 
 @api.route('/<review_id>')
@@ -61,7 +65,8 @@ class ReviewResource(Resource):
         try:
             review_data = request.json
             updated_review = facade.update_review(review_id, review_data)
-            return updated_review.to_dict(), 200
+            # return updated_review.to_dict(), 200
+            return {"message": "Review updated successfully"}, 200
         except ValueError as e:
             if str(e) == "Review not found":
                 api.abort(404, str(e))

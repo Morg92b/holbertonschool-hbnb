@@ -127,13 +127,27 @@ class HBnBFacade:
 
     """REVIEWS CONFIG"""
     def create_review(self, review_data):
+
+        required_fields = ['text', 'rating', 'user_id', 'place_id']
+        for field in required_fields:
+            if field not in review_data:
+                raise ValueError(f"Missing required field: {field}")
+
         """Checking DATA"""
-        user = self.user_repo.get(review_data.get('user_id'))
-        place = self.place_repo.get(review_data.get('place_id'))
-        if not user:
-            raise ValueError("User not found")
-        if not place:
-            raise ValueError("Place not found")
+        if not review_data.get('user_id'):
+            raise ValueError("User id is required")
+        else:
+            user = self.user_repo.get(review_data.get('user_id'))
+            if not user:
+                raise ValueError("User not found")
+
+        if not review_data.get('place_id'):
+            raise ValueError("Place id is required")
+        else:
+            place = self.place_repo.get(review_data.get('place_id'))
+            if not place:
+                raise ValueError("Place not found")
+
         """New review"""
         new_review = Review(
             text=review_data['text'],
@@ -161,13 +175,34 @@ class HBnBFacade:
         return reviews
 
     def update_review(self, review_id, review_data):
+
         review = self.get_review(review_id)
         if not review:
             raise ValueError("Review not found")
-        
-        new_text = review_data.get('text')
-        new_rating = review_data.get('rating')
-        review.update_review(review_data, new_text, new_rating)
+
+        required_fields = ['user_id', 'place_id']
+        for field in required_fields:
+            if field not in review_data:
+                raise ValueError(f"Missing required field: {field}")
+
+        if not review_data.get('user_id'):
+            raise ValueError("User id is required")
+
+        if not review.user_id == review_data.get('user_id'):
+            raise ValueError("unmatch the user registered")
+
+        if not review_data.get('place_id'):
+            raise ValueError("Place id is required")
+
+        if not review.place_id == review_data.get('place_id'):
+            raise ValueError("unmatch the place registered")
+
+        # new_text = review_data.get('text')
+        # new_rating = review_data.get('rating')
+
+        # review.update_review(review_data, new_text, new_rating)
+
+        review.update_review(review_data)
         self.review_repo.update(review_id, review)
 
         return review

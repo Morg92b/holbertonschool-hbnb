@@ -57,6 +57,10 @@ class PlaceList(Resource):
         """Retrieve a list of all places"""
         facade = current_app.config['FACADE']
         list_of_places = facade.get_all_places()
+
+        if not list_of_places:
+            return {'error': 'List of place not found'}, 404
+
         return list_of_places
 
 @api.route('/<place_id>')
@@ -84,6 +88,7 @@ class PlaceResource(Resource):
             updated_place = facade.update_place(place_id, place_data)
             if not updated_place:
                 return {"Error": "Place not found"}, 404
-            return updated_place, 200
+            # return updated_place, 200
+            return {"message": "Place updated successfully"}, 200
         except ValueError as e:
             return {"Error": str(e)}, 400
