@@ -37,16 +37,6 @@ class Review(BaseModel):
 
         super().update(data)
 
-    # def update_review(self, data, new_text=None, new_rating=None):
-    #     super().update(data)
-    #     if new_text:
-    #         self.text = new_text
-    #     if new_rating:
-    #         if not (1 <= new_rating <= 5):
-    #             raise ValueError("The new score must be between 1 and 5.")
-    #         self.rating = new_rating
-    #     self.updated_at = datetime.now()
-
     def to_dict(self):
         """Convert the review object to a dictionary"""
         return {
