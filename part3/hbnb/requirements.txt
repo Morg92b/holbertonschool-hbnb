@@ -1,0 +1,4 @@
+flask_restx
+Flask
+flask-bcrypt
+flask-jwt-extended
