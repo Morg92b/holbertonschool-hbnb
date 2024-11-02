@@ -1,6 +1,5 @@
 from flask_restx import Namespace, Resource, fields
 from flask import current_app
-# from app.models.user import User
 
 api = Namespace('users', description='User operations')
 
