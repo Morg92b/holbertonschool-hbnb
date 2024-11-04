@@ -1,16 +1,14 @@
-import uuid
-from datetime import datetime
 from .base_model import BaseModel
 
 class Place(BaseModel):
-    def __init__(self, title, description, price, latitude, longitude, owner):
+    def __init__(self, title, description, price, latitude, longitude, owner_id):
         super().__init__()
         self.title = title
         self.description = description
         self.price = price
         self.latitude = latitude
         self.longitude = longitude
-        self.owner = owner
+        self.owner_id = owner_id
         self.reviews = []  # List to store related reviews
         self.amenities = []  # List to store related amenities
         
@@ -26,8 +24,9 @@ class Place(BaseModel):
         if not (-180.0 <= self.longitude <= 180.0):
             raise ValueError("Longitude must be between -180.0 and 180.0")
         
-        if not self.owner:
+        if not self.owner_id:
             raise ValueError("The owner is required")
+
         
     def to_dict(self):
         """Convert the Place object to a dictionary for JSON serialization."""
@@ -38,12 +37,12 @@ class Place(BaseModel):
             'price': self.price,
             'latitude': self.latitude,
             'longitude': self.longitude,
-            'owner': self.owner,
+            'owner_id': self.owner_id,
             'amenities': [amenity.to_dict() for amenity in self.amenities],
             'reviews': [review for review in self.reviews]
         }
     
-    def update(self, data, owner):
+    def update(self, data):
 
         for key, value in data.items():
             if key == 'title':
@@ -62,7 +61,6 @@ class Place(BaseModel):
                 if not (-180.0 <= value <= 180.0):
                     raise ValueError("Longitude must be between -180.0 and 180.0")
 
-        self.owner = owner
         super().update(data)
 
     def add_review(self, review):
