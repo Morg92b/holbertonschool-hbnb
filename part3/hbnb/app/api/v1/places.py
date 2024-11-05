@@ -1,5 +1,7 @@
 from flask_restx import Namespace, Resource, fields
 from flask import current_app
+from flask_jwt_extended import jwt_required, get_jwt_identity
+from app.services.facade import NotFoundError
 
 api = Namespace('places', description='Place operations')
 
@@ -30,22 +32,29 @@ place_model = api.model('Place', {
     'price': fields.Float(required=True, description='Price per night'),
     'latitude': fields.Float(required=True, description='Latitude of the place'),
     'longitude': fields.Float(required=True, description='Longitude of the place'),
-    'owner_id': fields.String(required=True, description='ID of the owner'),
-    'amenities': fields.List(fields.String, required=False, description="List of amenities ID's"),
-    'reviews': fields.List(fields.Nested(review_model), required=False, description='List of reviews')
+    # 'owner_id': fields.String(required=True, description='ID of the owner'),
+    'amenities': fields.List(fields.String, required=False, description="List of amenities ID's")
+    # 'amenities': fields.List(fields.String, required=False, description="List of amenities ID's"),
+    # 'reviews': fields.List(fields.Nested(review_model), required=False, description='List of reviews')
 })
 
 @api.route('/')
 class PlaceList(Resource):
+    @jwt_required()
     @api.expect(place_model)
     @api.response(201, 'Place successfully created')
     @api.response(400, 'Invalid input data')
+    @api.response(404, 'Not Found data')
     def post(self):
         """Register a new place"""
+        current_user = get_jwt_identity()
+        if current_user['is_owner'] is False:
+            return {'Error': 'No authorized for create places'}, 403
+
         facade = current_app.config['FACADE']
         place_data = api.payload
         try:
-            new_place = facade.create_place(place_data)
+            new_place = facade.create_place(place_data, current_user['id'])
             return new_place, 201
         except ValueError as e:
             return {"Error": str(e)}, 400
@@ -59,7 +68,7 @@ class PlaceList(Resource):
         list_of_places = facade.get_all_places()
 
         if not list_of_places:
-            return {'error': 'List of place not found'}, 404
+            return {'message': 'No place created'}, 200
 
         return list_of_places
 
@@ -70,25 +79,41 @@ class PlaceResource(Resource):
     def get(self, place_id):
         """Get place details by ID"""
         facade = current_app.config['FACADE']
-        place = facade.get_place(place_id)
-        if not place:
-            return {"Error": "Place not found"}, 404
-        return place.to_dict(), 200
+        place_dict = facade.get_place(place_id)
+        if not place_dict:
+            return {"NotFoundError": "Place not found"}, 404
 
+        place_dict = facade.to_dict_place(place_dict)
+        return place_dict, 200
+
+
+    @jwt_required()
     @api.expect(place_model)
     @api.response(200, 'Place updated successfully')
-    @api.response(404, 'Place not found')
     @api.response(400, 'Invalid input data')
+    @api.response(403, 'Unauthorized action')
+    @api.response(404, 'Place not found')
     def put(self, place_id):
         """Update a place's information"""
+
+        current_user = get_jwt_identity()
+
         facade = current_app.config['FACADE']
         place_data = api.payload
 
+        place = facade.get_place(place_id)
+        if not place:
+            return {"NotFoundError": "Place not found"}, 404
+
+        if current_user['id'] != place.owner_id:
+            return {'Error': 'Unauthorized action'}, 403
+
         try:
-            updated_place = facade.update_place(place_id, place_data)
-            if not updated_place:
-                return {"Error": "Place not found"}, 404
+            # updated_place = facade.update_place(place_id, place_data, current_user['id'])
             # return updated_place, 200
+            facade.update_place(place_id, place_data, current_user['id'])
             return {"message": "Place updated successfully"}, 200
         except ValueError as e:
-            return {"Error": str(e)}, 400
+            return {"ValueError": str(e)}, 400
+        except NotFoundError as e:
+            return {"NotFoundError": str(e)}, 404
