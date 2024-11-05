@@ -1,16 +1,14 @@
-import uuid
-from datetime import datetime
 from .base_model import BaseModel
 
 class Review(BaseModel):
-    def __init__(self, text, rating, place, user):
+    def __init__(self, text, rating, place_id, user_id):
         super().__init__()
         self.text = text
         self.rating = rating
-        self.place = place
-        self.place_id = place.id
-        self.user = user
-        self.user_id = user.id
+        # self.place = place
+        self.place_id = place_id
+        # self.user = user
+        self.user_id = user_id
         
         if not self.text:
             raise ValueError("U need to write comment")
@@ -18,11 +16,12 @@ class Review(BaseModel):
         if not (1 <= self.rating <= 5):
             raise ValueError("The new score must be between 1 and 5")
 
-        if not self.place:
-            raise ValueError("The place must be exist")
+        # if not self.place:
+        #     raise ValueError("The place must be exist")
 
-        if not self.user:
-            raise ValueError("U need to register or connect Account")
+        # if not self.user:
+        #     raise ValueError("U need to register or connect Account")
+
 
     def update_review(self, data):
 
@@ -43,8 +42,8 @@ class Review(BaseModel):
             'id': str(self.id),
             'text': self.text,
             'rating': self.rating,
-            'place_id': str(self.place.id),
-            'user_id': str(self.user.id),
+            'place_id': self.place.id,
+            'user_id': self.user.id,
             'created_at': self.created_at.isoformat(),
             'updated_at': self.updated_at.isoformat()
         }
