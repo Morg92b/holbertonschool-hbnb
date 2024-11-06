@@ -14,7 +14,7 @@ review_model = api.model('Review', {
     'place_id': fields.String(required=True, description='ID of the place')
 })
 
-review_model_up = api.model('Review', {
+review_model_up = api.model('Review_up', {
     'text': fields.String(required=False, description='Text of the review'),
     'rating': fields.Integer(required=False, description='Rating of the place (1-5)')
 })

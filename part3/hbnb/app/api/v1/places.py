@@ -36,7 +36,7 @@ place_model = api.model('Place', {
     'amenities': fields.List(fields.String, required=False, description="List of amenities ID's")
 })
 
-place_model_up = api.model('Place', {
+place_model_up = api.model('Place_up', {
     'title': fields.String(required=True, description='Title of the place'),
     'description': fields.String(description='Description of the place'),
     'price': fields.Float(required=True, description='Price per night'),
