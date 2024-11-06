@@ -2,6 +2,7 @@ from flask_restx import Namespace, Resource, fields
 from app.services.facade import HBnBFacade
 from flask import current_app, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
+from app.services.facade import NotFoundError, AuthError
 
 api = Namespace('reviews', description='Review operations')
 
@@ -36,8 +37,8 @@ class ReviewList(Resource):
             return new_review.to_dict(), 201
         except ValueError as e:
             api.abort(400, str(e))
-        # except Exception as e:
-        #     api.abort(403, str(e))
+        except AuthError as e:
+            api.abort(403, str(e))
 
     @api.response(200, 'List of reviews retrieved successfully')
     def get(self):
@@ -62,7 +63,7 @@ class ReviewResource(Resource):
         try:
             review = facade.get_review(review_id)
             return review.to_dict(), 200
-        except ValueError:
+        except NotFoundError:
             api.abort(404, f"Review with ID {review_id} not found")
 
     @jwt_required()
@@ -82,11 +83,10 @@ class ReviewResource(Resource):
             facade.update_review(review_id, review_data, current_user['id'])
             return {"message": "Review updated successfully"}, 200
         except ValueError as e:
-            if str(e) == "Review not found":
-                api.abort(404, str(e))
-            else:
                 api.abort(400, str(e))
-        except Exception as e:
+        except NotFoundError as e:
+                api.abort(404, str(e))
+        except AuthError as e:
                 api.abort(403, str(e))
 
 
@@ -101,9 +101,9 @@ class ReviewResource(Resource):
         try:
             facade.delete_review(review_id, current_user['id'])
             return {"message": "Review deleted successfully"}, 200
-        except ValueError:
+        except NotFoundError:
             api.abort(404, f"Review with ID {review_id} not found")
-        except Exception as e:
+        except AuthError as e:
                 api.abort(403, str(e))
 
 
