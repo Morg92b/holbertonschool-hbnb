@@ -3,7 +3,6 @@ from app.models.user import User
 from app.models.amenity import Amenity
 from app.models.place import Place
 from app.models.review import Review
-# from flask import jsonify
 
 class HBnBFacade:
     def __init__(self):
@@ -14,15 +13,29 @@ class HBnBFacade:
 
     """USER CONFIG"""
     def create_user(self, user_data):
+        # required_fields = ['first_name', 'last_name', 'email', 'password']
+        # for field in required_fields:
+        #     if field not in user_data:
+        #         raise ValueError(f"Missing required field: {field}")
+
         user = User(**user_data)
         self.user_repo.add(user)
         print(f"User created: {user.id}")
         return user.id
 
-    def update_user(self, user_id, user_data):
+    def update_user(self, user_id, user_data, auth_user_id):
         user = self.get_user(user_id)
         if not user:
-            raise ValueError("User not found")
+            raise NotFoundError("User not found")
+        
+        if user.id != auth_user_id:
+            raise AuthError("Unauthorized action.")
+
+        not_required_fields = ['email', 'password']
+        for field in not_required_fields:
+            if field in user_data:
+                raise ValueError("You cannot modify email or password.")
+
         user.update(user_data)
         self.user_repo.update(user_id, user)
         return user.to_dict()
@@ -127,13 +140,13 @@ class HBnBFacade:
 
         owner = self.user_repo.get(auth_user_id)
         if not owner:
-            raise NotFoundError("User not found, Invalid data: auth user id")
+            raise NotFoundError("User not found, Invalid data: auth user_id")
 
         # check owner_id
         if 'owner_id' in place_data:
             owner_up = self.user_repo.get(place_data.get('owner_id'))
             if not owner_up:
-                raise ValueError("Owner not found, Invalid data: owner id")
+                raise ValueError("Owner not found, Invalid data: owner_id")
             if not owner_up.is_owner:
                 raise ValueError("Owner not authorized to create places")
 
@@ -169,7 +182,7 @@ class HBnBFacade:
 
         place = self.place_repo.get(place_id)
         if not place:
-            raise ValueError("Invalid data: place id, Place not found")
+            raise ValueError("Invalid data: place_id, Place not found")
 
         # Check that the place_id in the request belongs to a place the user does not own.
         if place.owner_id == auth_user_id:
@@ -205,7 +218,7 @@ class HBnBFacade:
     def get_reviews_by_place(self, place_id):
         place = self.place_repo.get(place_id)
         if not place:
-            raise ValueError("Invalid data: place id, Place not found")
+            raise ValueError("Invalid data: place_id, Place not found")
         reviews = [review for review in self.review_repo._storage.values() if review.place_id == place_id]
         return reviews
 
