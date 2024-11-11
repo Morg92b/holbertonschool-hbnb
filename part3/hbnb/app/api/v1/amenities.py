@@ -1,5 +1,7 @@
 from flask_restx import Namespace, Resource, fields
 from flask import current_app
+from flask_jwt_extended import jwt_required, get_jwt_identity
+from app.services.facade import NotFoundError, AuthError
 
 api = Namespace('amenities', description='Amenity operations')
 
@@ -10,11 +12,17 @@ amenity_model = api.model('Amenity', {
 
 @api.route('/')
 class AmenityList(Resource):
+    @jwt_required()
     @api.expect(amenity_model)
     @api.response(201, 'Amenity successfully created')
     @api.response(400, 'Invalid input data')
+    @api.response(403, 'Unauthorized action')
     def post(self):
         """Register a new amenity"""
+        current_user = get_jwt_identity()
+        if not current_user.get('is_admin'):
+            return {'error': 'Admin privileges required'}, 403
+
         facade = current_app.config['FACADE']
         amenity_data = api.payload
         try:
@@ -25,6 +33,7 @@ class AmenityList(Resource):
         except Exception as e:
             return {"Error": "Failed to create amenity: " + str(e)}, 500
 
+
     @api.response(200, 'List of amenities retrieved successfully')
     def get(self):
         """Retrieve a list of all amenities"""
@@ -34,6 +43,7 @@ class AmenityList(Resource):
             return {'error': 'List of amenities not found'}, 404
 
         return [amenity.to_dict() for amenity in amenities], 200  
+
 
 @api.route('/<amenity_id>')
 class AmenityResource(Resource):
@@ -47,11 +57,17 @@ class AmenityResource(Resource):
             return {'error': 'Amenity not found'}, 404
         return amenity.to_dict(), 200  
 
+    @jwt_required()
     @api.expect(amenity_model)
     @api.response(200, 'Amenity updated successfully')
     @api.response(404, 'Amenity not found')
     @api.response(400, 'Invalid input data')
+    @api.response(403, 'Unauthorized action')
     def put(self, amenity_id):
+        current_user = get_jwt_identity()
+        if not current_user.get('is_admin'):
+            return {'error': 'Admin privileges required'}, 403
+
         facade = current_app.config['FACADE']
         amenity_data = api.payload
         try:
@@ -60,6 +76,8 @@ class AmenityResource(Resource):
             facade.update_amenity(amenity_id, amenity_data)
             return {"message": "Amenity updated successfully"}, 200
         except ValueError as e:
+            return {"ValueError": str(e)}, 400
+        except NotFoundError as e:
             return {"Error": str(e)}, 404
         except Exception as e:
             return {"Error": "Failed to update amenity: " + str(e)}, 500
