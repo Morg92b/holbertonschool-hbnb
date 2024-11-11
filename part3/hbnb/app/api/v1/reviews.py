@@ -99,7 +99,7 @@ class ReviewResource(Resource):
         current_user = get_jwt_identity()
         facade = current_app.config['FACADE']
         try:
-            facade.delete_review(review_id, current_user['id'])
+            facade.delete_review(review_id, current_user['id'], current_user['is_admin'])
             return {"message": "Review deleted successfully"}, 200
         except NotFoundError:
             api.abort(404, f"Review with ID {review_id} not found")
