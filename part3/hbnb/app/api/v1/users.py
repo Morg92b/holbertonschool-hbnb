@@ -20,21 +20,31 @@ user_model_up = api.model('User_up', {
     'is_owner': fields.Boolean(required=False, description='Indicates if the user is an owner', default=False)
 })
 
+
 @api.route('/', methods=['POST'])
-class UserList(Resource):
+# class UserList(Resource):
+class AdminUserCreate(Resource):
+    @jwt_required()
     @api.expect(user_model, validate=True)
     @api.response(201, 'User successfully created')
     @api.response(400, 'Email already registered')
     @api.response(400, 'Invalid input data')
+    @api.response(403, 'Unauthorized action')
     def post(self):
         """Register a new user"""
+        current_user = get_jwt_identity()
+        if not current_user.get('is_admin'):
+            return {'error': 'Admin privileges required'}, 403
+
         user_data = api.payload
         facade = current_app.config['FACADE']
-
+    
         # Simulate email uniqueness check (to be replaced by real validation with persistence)
-        existing_user = facade.get_user_by_email(user_data['email'])
+        email = user_data.get('email')
+        existing_user = facade.get_user_by_email(email)
         if existing_user:
             return {'error': 'Email already registered'}, 400
+
         try:
             new_user_id = facade.create_user(user_data)
         except ValueError as e:
@@ -59,6 +69,7 @@ class UserResource(Resource):
             return {'error': 'User not found'}, 404
         return user.to_dict(), 200
 
+
     @jwt_required()
     @api.expect(user_model_up, validate=True)
     @api.response(200, 'User successfully updated')
@@ -66,25 +77,37 @@ class UserResource(Resource):
     def put(self, user_id):
         """Update user details by ID"""
         current_user = get_jwt_identity()
+        if current_user.get('is_admin') is False:
+            return {'error': 'Admin privileges required'}, 403
 
         facade = current_app.config['FACADE']
         user_data = api.payload
-        # existing_user = facade.get_user(user_id)
-        # if not existing_user:
-        #     return {"NotFoundError": "User not found"}, 404
-        
+
+        existing_user = facade.get_user(user_id)
+        if not existing_user:
+            return {"NotFoundError": "User not found"}, 404
+
+        ## task3 check with user authentification
         # if existing_user.user_id != current_user['id']:
         #     return {"Unauthorized action."}, 403
 
+        email = user_data.get('email')
+        # Ensure email uniqueness
+        if email:
+            existing_user = facade.get_user_by_email(email)
+            if existing_user and existing_user.id != user_id:
+                return {'error': 'Email already in use'}, 400
+
         try:
-            updated_user = facade.update_user(user_id, user_data, current_user['id'])
+            updated_user = facade.update_user(user_id, user_data)
             return updated_user, 200
 
         except ValueError as e:
             return {"Error": str(e)}, 400
         except NotFoundError as e:
             return {"Error": str(e)}, 404
-        except AuthError as e:
-            return {"Error": str(e)}, 403
+        # except AuthError as e:
+        #     return {"Error": str(e)}, 403
         except Exception as e:
             return {"Error": str(e)}, 500
+
