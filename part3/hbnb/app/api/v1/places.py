@@ -103,23 +103,26 @@ class PlaceResource(Resource):
     @api.response(404, 'Place not found')
     def put(self, place_id):
         """Update a place's information"""
-
         current_user = get_jwt_identity()
 
         facade = current_app.config['FACADE']
         place_data = api.payload
 
+        # Set is_admin default to False if not exists
+        is_admin = current_user.get('is_admin', False)
+        user_id = current_user.get('id')
+
         place = facade.get_place(place_id)
         if not place:
             return {"NotFoundError": "Place not found"}, 404
 
-        if current_user['id'] != place.owner_id:
-            return {'Error': 'Unauthorized action'}, 403
+        if not is_admin and place.owner_id != user_id:
+            return {'error': 'Unauthorized action'}, 403
 
         try:
             # updated_place = facade.update_place(place_id, place_data, current_user['id'])
             # return updated_place, 200
-            facade.update_place(place_id, place_data, current_user['id'])
+            facade.update_place(place_id, place_data)
             return {"message": "Place updated successfully"}, 200
         except ValueError as e:
             return {"ValueError": str(e)}, 400
