@@ -23,19 +23,26 @@ class HBnBFacade:
         print(f"User created: {user.id}")
         return user.id
 
-    def update_user(self, user_id, user_data, auth_user_id):
-        user = self.get_user(user_id)
-        if not user:
-            raise NotFoundError("User not found")
+
+    def update_user(self, user_id, user_data):
+    ## task3 check with user authentification
+    # def update_user(self, user_id, user_data, auth_user_id):
+
+        # user = self.get_user(user_id)
+        # if not user:
+        #     raise NotFoundError("User not found")
         
-        if user.id != auth_user_id:
-            raise AuthError("Unauthorized action.")
+        ## task3 check with user authentification
+        # if user.id != auth_user_id:
+        #     raise AuthError("Unauthorized action.")
 
-        not_required_fields = ['email', 'password']
-        for field in not_required_fields:
-            if field in user_data:
-                raise ValueError("You cannot modify email or password.")
+        ## task3 Prevent the user from modifying their email and password in this endpoint.
+        # not_required_fields = ['email', 'password']
+        # for field in not_required_fields:
+        #     if field in user_data:
+        #         raise ValueError("You cannot modify email or password.")
 
+        user = self.get_user(user_id)
         user.update(user_data)
         self.user_repo.update(user_id, user)
         return user.to_dict()
@@ -62,7 +69,7 @@ class HBnBFacade:
     def update_amenity(self, amenity_id, amenity_data):
         amenity = self.get_amenity(amenity_id)
         if not amenity:
-            raise ValueError("Amenity not found")
+            raise NotFoundError("Amenity not found")
         amenity.update(amenity_data)
         self.amenity_repo.update(amenity_id, amenity)
         return amenity
@@ -133,14 +140,10 @@ class HBnBFacade:
         places = self.place_repo.get_all()
         return [self.to_dict_place(place) for place in places]
 
-    def update_place(self, place_id, place_data, auth_user_id):
+    def update_place(self, place_id, place_data):
         place = self.get_place(place_id)
         if not place:
             raise NotFoundError("Place not found")
-
-        owner = self.user_repo.get(auth_user_id)
-        if not owner:
-            raise NotFoundError("User not found, Invalid data: auth user_id")
 
         # check owner_id
         if 'owner_id' in place_data:
@@ -236,12 +239,12 @@ class HBnBFacade:
 
         return review
 
-    def delete_review(self, review_id, auth_user_id):
+    def delete_review(self, review_id, auth_user_id, auth_is_admin):
         review = self.get_review(review_id)
         if not review:
             raise NotFoundError("Review not found")
 
-        if not review.user_id == auth_user_id:
+        if not auth_is_admin and review.user_id != auth_user_id:
             raise AuthError("Unauthorized action.")
 
         """ remove review from place review_list """
