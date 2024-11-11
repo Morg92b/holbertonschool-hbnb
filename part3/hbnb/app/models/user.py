@@ -42,13 +42,19 @@ class User(BaseModel):
             if not data['last_name'] or len(data['last_name']) > 50:
                 raise ValueError("The last name is required and must contain a maximum of 50 characters")
 
-        # if 'email' in data:
-        #     if not data['email']:
-        #         raise ValueError("The email is required")
-        #     elif not re.match(r"[^@]+@[^@]+\.[^@]+", data['email']):
-        #         raise ValueError("The email address is invalid")
+        if 'email' in data:
+            if not data['email']:
+                raise ValueError("The email is required")
+            elif not re.match(r"[^@]+@[^@]+\.[^@]+", data['email']):
+                raise ValueError("The email address is invalid")
+            
+        if 'password' in data:
+            password = data.pop('password')
+            self.hash_password(password)
 
         super().update(data)
+
+
 
     def to_dict(self):
         """Convert the User object to a dictionary for JSON serialization."""
