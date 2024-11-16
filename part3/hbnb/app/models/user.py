@@ -1,9 +1,19 @@
 import re
 from .base_model import BaseModel
-from app.extensions import bcrypt
+from app.extensions import db, bcrypt
 
 
 class User(BaseModel):
+
+    __tablename__ = 'users'
+
+    first_name = db.Column(db.String(50), nullable=False)
+    last_name = db.Column(db.String(50), nullable=False)
+    email = db.Column(db.String(120), nullable=False, unique=True)
+    password = db.Column(db.String(128), nullable=False)
+    is_owner = db.Column(db.Boolean, default=False)
+    is_admin = db.Column(db.Boolean, default=False)
+
     def __init__(self, first_name, last_name, email, password, is_admin=False, is_owner=False):
         super().__init__()
 
