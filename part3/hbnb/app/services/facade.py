@@ -1,4 +1,6 @@
-from app.persistence.repository import InMemoryRepository
+# from app.persistence.repository import InMemoryRepository
+from app.persistence.repository import SQLAlchemyRepository
+from app.services.repositories.user_repository import UserRepository
 from app.models.user import User
 from app.models.amenity import Amenity
 from app.models.place import Place
@@ -6,10 +8,10 @@ from app.models.review import Review
 
 class HBnBFacade:
     def __init__(self):
-        self.user_repo = InMemoryRepository()
-        self.place_repo = InMemoryRepository()
-        self.review_repo = InMemoryRepository()
-        self.amenity_repo = InMemoryRepository()
+        self.user_repo = UserRepository()
+        self.place_repo = SQLAlchemyRepository(Place)
+        self.review_repo = SQLAlchemyRepository(Review)
+        self.amenity_repo = SQLAlchemyRepository(Amenity)
 
     """USER CONFIG"""
     def create_user(self, user_data):
@@ -52,7 +54,8 @@ class HBnBFacade:
         return self.user_repo.get(user_id)
 
     def get_user_by_email(self, email):
-        return self.user_repo.get_by_attribute('email', email)
+        # return self.user_repo.get_by_attribute('email', email)
+        return self.user_repo.get_user_by_email(email)
 
     """AMENITY CONFIG"""
     def create_amenity(self, amenity_data):
@@ -98,7 +101,7 @@ class HBnBFacade:
             amenity = self.amenity_repo.get(amenity_id)
             if not amenity:
                 raise ValueError(f"Invalid data: Amenity with ID {amenity_id} not found")
-            place.add_amenity(amenity)
+            place.add_amenity(amenity_id)
 
         print(f"Place created successfully: {place.id}")
 
@@ -123,7 +126,17 @@ class HBnBFacade:
         }
 
         place_dict.setdefault("owner", owner_dict)
-        place_dict.setdefault("amenities", amenities)
+
+        amenities_list = []
+        for amenity_id in amenities:
+            amenity = self.amenity_repo.get(amenity_id)
+            amenity_dict = {
+                "amenity_id": amenity_id,
+                "name": amenity.name
+            }
+            amenities_list.append(amenity_dict)
+
+        place_dict.setdefault("amenities", amenities_list)
         place_dict.setdefault("reviews", reviews)
 
         return place_dict
@@ -153,6 +166,8 @@ class HBnBFacade:
             if not owner_up.is_owner:
                 raise ValueError("Owner not authorized to create places")
 
+
+
         amenities = place_data.pop('amenities', [])
 
         # place.update(place_data, owner=owner.to_dict())
@@ -163,11 +178,12 @@ class HBnBFacade:
             amenity = self.amenity_repo.get(amenity_id)
             if not amenity:
                 raise ValueError(f"Amenity with ID {amenity_id} not found")
-            place.add_amenity(amenity)
+            place.add_amenity(amenity_id)
 
         self.place_repo.update(place_id, place)
 
-        return place.to_dict()
+        # return place.to_dict()
+        return
 
     """REVIEWS CONFIG"""
     def create_review(self, review_data, auth_user_id):
