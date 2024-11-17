@@ -9,9 +9,9 @@ from app.models.review import Review
 class HBnBFacade:
     def __init__(self):
         self.user_repo = UserRepository()
-        self.place_repo = SQLAlchemyRepository(Place)
-        self.review_repo = SQLAlchemyRepository(Review)
-        self.amenity_repo = SQLAlchemyRepository(Amenity)
+        self.place_repo = UserRepository()
+        self.review_repo = UserRepository()
+        self.amenity_repo = UserRepository()
 
     """USER CONFIG"""
     def create_user(self, user_data):
@@ -167,7 +167,7 @@ class HBnBFacade:
                 raise ValueError("Owner not authorized to create places")
 
 
-
+        ## ここ問題じゃない？
         amenities = place_data.pop('amenities', [])
 
         # place.update(place_data, owner=owner.to_dict())
