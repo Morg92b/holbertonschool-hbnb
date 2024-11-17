@@ -5,7 +5,7 @@ from app.extensions import db, bcrypt
 
 class User(BaseModel):
 
-    __tablename__ = 'TB_USERS'
+    __tablename__ = 'TB_USER'
 
     first_name = db.Column(db.String(50), nullable=False)
     last_name = db.Column(db.String(50), nullable=False)
