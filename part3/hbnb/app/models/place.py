@@ -1,6 +1,15 @@
 from .base_model import BaseModel
+from app.extensions import db
 
 class Place(BaseModel):
+    __tablename__ = 'TB_PLACE'
+
+    title = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.String(255), nullable=True)
+    price = db.Column(db.Float, nullable=False)
+    latitude = db.Column(db.Float, nullable=False)
+    longitude = db.Column(db.Float, default=False)
+
     def __init__(self, title, description, price, latitude, longitude, owner_id):
         super().__init__()
         self.title = title

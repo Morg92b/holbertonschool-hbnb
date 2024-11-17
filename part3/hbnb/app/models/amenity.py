@@ -1,8 +1,12 @@
-import uuid
-from datetime import datetime
 from .base_model import BaseModel
+from app.extensions import db
 
 class Amenity(BaseModel):
+    __tablename__ = 'TB_AMENITY'
+
+    name = db.Column(db.String(50), nullable=False)
+
+
     def __init__(self, name):
         super().__init__()
         if not name or len(name) > 50:
