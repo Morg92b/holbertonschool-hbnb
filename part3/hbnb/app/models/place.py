@@ -9,6 +9,7 @@ class Place(BaseModel):
     price = db.Column(db.Float, nullable=False)
     latitude = db.Column(db.Float, nullable=False)
     longitude = db.Column(db.Float, default=False)
+    owner_id = db.Column(db.String(36), nullable=False)
 
     def __init__(self, title, description, price, latitude, longitude, owner_id):
         super().__init__()
@@ -46,9 +47,10 @@ class Place(BaseModel):
             'price': self.price,
             'latitude': self.latitude,
             'longitude': self.longitude,
-            'owner_id': self.owner_id,
-            'amenities': [amenity.to_dict() for amenity in self.amenities],
-            'reviews': [review for review in self.reviews]
+            'owner_id': self.owner_id
+            # # 'owner_id': self.owner_id,
+            # # 'amenities': [amenity.to_dict() for amenity in self.amenities],
+            # # 'reviews': [review for review in self.reviews]
         }
     
     def update(self, data):
