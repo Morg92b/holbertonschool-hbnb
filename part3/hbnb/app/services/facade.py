@@ -78,6 +78,7 @@ class HBnBFacade:
             raise NotFoundError("Amenity not found")
         amenity.update(amenity_data)
         self.amenity_repo.update(amenity_id, amenity)
+        # self.amenity_repo.update(amenity_id, amenity_data)
         return amenity
 
     """PLACE CONFIG"""
@@ -98,13 +99,14 @@ class HBnBFacade:
         amenities = place_data.pop('amenities', [])
 
         place = Place(**place_data, owner_id=auth_user_id)
-        self.place_repo.add(place)
-
+    
         for amenity_id in amenities:
             amenity = self.amenity_repo.get(amenity_id)
             if not amenity:
                 raise ValueError(f"Invalid data: Amenity with ID {amenity_id} not found")
             place.add_amenity(amenity_id)
+    
+        self.place_repo.add(place)
 
         print(f"Place created successfully: {place.id}")
 
@@ -117,8 +119,8 @@ class HBnBFacade:
         place_dict = place_data.to_dict()
         owner_id = place_dict.pop('owner_id')
         print(f'owner_id: {owner_id}')
-        amenities = place_dict.pop('amenities')
-        reviews = place_dict.pop('reviews')
+        # # amenities = place_dict.pop('amenities')
+        # # reviews = place_dict.pop('reviews')
 
         owner = self.user_repo.get(owner_id)
         owner_dict = {
@@ -130,17 +132,17 @@ class HBnBFacade:
 
         place_dict.setdefault("owner", owner_dict)
 
-        amenities_list = []
-        for amenity_id in amenities:
-            amenity = self.amenity_repo.get(amenity_id)
-            amenity_dict = {
-                "amenity_id": amenity_id,
-                "name": amenity.name
-            }
-            amenities_list.append(amenity_dict)
+        # # amenities_list = []
+        # # for amenity_id in amenities:
+        # #     amenity = self.amenity_repo.get(amenity_id)
+        # #     amenity_dict = {
+        # #         "amenity_id": amenity_id,
+        # #         "name": amenity.name
+        # #     }
+        # #     amenities_list.append(amenity_dict)
 
-        place_dict.setdefault("amenities", amenities_list)
-        place_dict.setdefault("reviews", reviews)
+        # # place_dict.setdefault("amenities", amenities_list)
+        # # place_dict.setdefault("reviews", reviews)
 
         return place_dict
 
@@ -170,7 +172,6 @@ class HBnBFacade:
                 raise ValueError("Owner not authorized to create places")
 
 
-        ## ここ問題じゃない？
         amenities = place_data.pop('amenities', [])
 
         # place.update(place_data, owner=owner.to_dict())
@@ -185,7 +186,6 @@ class HBnBFacade:
 
         self.place_repo.update(place_id, place)
 
-        # return place.to_dict()
         return
 
     """REVIEWS CONFIG"""
@@ -222,9 +222,9 @@ class HBnBFacade:
 
         self.review_repo.add(new_review)
 
-        """ add review to place review_list """
-        place.add_review(new_review.id)
-        self.place_repo.update(place_id, place)
+        # # """ add review to place review_list """
+        # # place.add_review(new_review.id)
+        # # self.place_repo.update(place_id, place)
 
         return new_review
 
@@ -241,7 +241,8 @@ class HBnBFacade:
         place = self.place_repo.get(place_id)
         if not place:
             raise ValueError("Invalid data: place_id, Place not found")
-        reviews = [review for review in self.review_repo._storage.values() if review.place_id == place_id]
+        # reviews = [review for review in self.review_repo._storage.values() if review.place_id == place_id]
+        reviews = [review for review in self.review_repo.get_all() if review.place_id == place_id]
         return reviews
 
     def update_review(self, review_id, review_data, auth_user_id):
@@ -266,11 +267,11 @@ class HBnBFacade:
         if not auth_is_admin and review.user_id != auth_user_id:
             raise AuthError("Unauthorized action.")
 
-        """ remove review from place review_list """
-        place = self.get_place(review.place_id)
-        if review_id in place.reviews:
-            place.reviews.remove(review_id)
-            self.place_repo.update(review.place_id, place)
+        # # """ remove review from place review_list """
+        # # place = self.get_place(review.place_id)
+        # # if review_id in place.reviews:
+        # #     place.reviews.remove(review_id)
+        # #     self.place_repo.update(review.place_id, place)
 
         self.review_repo.delete(review_id)
 
