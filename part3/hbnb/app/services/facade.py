@@ -188,6 +188,17 @@ class HBnBFacade:
 
         return
 
+    def delete_place(self, place_id, auth_user_id, auth_is_admin):
+        place = self.get_place(place_id)
+        if not place:
+            raise NotFoundError("Review not found")
+
+        if not auth_is_admin and place.owner_id != auth_user_id:
+            raise AuthError("Unauthorized action.")
+
+        self.place_repo.delete(place_id)
+
+
     """REVIEWS CONFIG"""
     def create_review(self, review_data, auth_user_id):
 

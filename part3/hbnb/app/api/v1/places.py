@@ -1,7 +1,7 @@
 from flask_restx import Namespace, Resource, fields
 from flask import current_app
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from app.services.facade import NotFoundError
+from app.services.facade import NotFoundError, AuthError
 
 api = Namespace('places', description='Place operations')
 
@@ -130,3 +130,22 @@ class PlaceResource(Resource):
             return {"NotFoundError": str(e)}, 404
         except Exception as e:
             return {"Error": str(e)}, 500
+
+
+
+    @jwt_required()
+    @api.response(200, 'Place deleted successfully')
+    @api.response(404, 'Place not found')
+    def delete(self, place_id):
+        """Delete a place"""
+        # Placeholder for the logic to delete a place
+        current_user = get_jwt_identity()
+        facade = current_app.config['FACADE']
+        try:
+            facade.delete_place(place_id, current_user['id'], current_user['is_admin'])
+            return {"message": "Review deleted successfully"}, 200
+        except NotFoundError:
+            api.abort(404, f"Review with ID {place_id} not found")
+        except AuthError as e:
+                api.abort(403, str(e))
+
