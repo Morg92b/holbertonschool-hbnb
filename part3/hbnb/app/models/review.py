@@ -6,6 +6,8 @@ class Review(BaseModel):
 
     text = db.Column(db.String(255), nullable=False)
     rating = db.Column(db.Integer, nullable=False)
+    place_id = db.Column(db.String(36), nullable=False)
+    user_id = db.Column(db.String(36), nullable=False)
 
 
     def __init__(self, text, rating, place_id, user_id):
