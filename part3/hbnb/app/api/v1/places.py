@@ -37,11 +37,11 @@ place_model = api.model('Place', {
 })
 
 place_model_up = api.model('Place_up', {
-    'title': fields.String(required=True, description='Title of the place'),
+    'title': fields.String(required=False, description='Title of the place'),
     'description': fields.String(description='Description of the place'),
-    'price': fields.Float(required=True, description='Price per night'),
-    'latitude': fields.Float(required=True, description='Latitude of the place'),
-    'longitude': fields.Float(required=True, description='Longitude of the place'),
+    'price': fields.Float(required=False, description='Price per night'),
+    'latitude': fields.Float(required=False, description='Latitude of the place'),
+    'longitude': fields.Float(required=False, description='Longitude of the place'),
     'owner_id': fields.String(required=False, description='ID of the owner'),
     'amenities': fields.List(fields.String, required=False, description="List of amenities ID's")
 })
