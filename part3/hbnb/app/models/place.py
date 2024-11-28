@@ -1,5 +1,8 @@
 from .base_model import BaseModel
+from app.models.amenity import PlaceAmenity
 from app.extensions import db
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import relationship
 
 class Place(BaseModel):
     __tablename__ = 'TB_PLACE'
@@ -9,7 +12,14 @@ class Place(BaseModel):
     price = db.Column(db.Float, nullable=False)
     latitude = db.Column(db.Float, nullable=False)
     longitude = db.Column(db.Float, default=False)
-    owner_id = db.Column(db.String(36), nullable=False)
+    owner_id = db.Column(db.String(36), ForeignKey('TB_USER.id'), nullable=False)
+
+    # Userとのリレーション（オーナー情報）
+    owner = relationship('User', backref='tb_place_owner', lazy=True)
+
+    tb_review = relationship('Review', backref='tb_place', lazy=True)
+    amenity_place = relationship('PlaceAmenity', backref='tb_amenit_place', lazy='subquery')
+
 
     def __init__(self, title, description, price, latitude, longitude, owner_id):
         super().__init__()
@@ -74,10 +84,14 @@ class Place(BaseModel):
 
         super().update(data)
 
-    def add_review(self, review):
+    def add_review(self, review_id):
         """Add a review to the place."""
-        self.reviews.append(review)
+        self.reviews.append(review_id)
 
-    def add_amenity(self, amenity):
-        """Add an amenity to the place."""
-        self.amenities.append(amenity)
+    def add_amenity(self, amenity_id):
+        # """Add an amenity to the place."""
+        # self.amenities.append(amenity)
+
+        """Add an amenity to this place."""
+        place_amenity = PlaceAmenity(place_id=self.id, amenity_id=amenity_id)
+        self.amenity_place.append(place_amenity)
