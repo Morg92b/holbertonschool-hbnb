@@ -1,0 +1,55 @@
+erDiagram
+
+    TB_USER ||--o{ TB_PLACE : own
+    TB_PLACE ||--o{ TB_REVIEW : have
+    TB_PLACE ||--o{ TB_PLACE_AMENITY : intermediate
+    TB_AMENITY ||--o{ TB_PLACE_AMENITY : intermediate
+    TB_USER ||--o{ TB_REVIEW : make
+
+
+    TB_USER {
+    varchar id PK
+    varchar first_name
+    varchar last_name
+    varchar email
+    varchar password
+    bloolen is_owner
+    bloolen is_admin
+    datetime created_at
+    datetime update_at
+    }
+
+    TB_PLACE {
+    varchar id PK
+    varchar title
+    varchar description
+    float price
+    float latitude
+    float longitude
+    varchar owner_id FK "reference TB_USER id"
+    datetime created_at
+    datetime update_at
+    }
+
+    TB_AMENITY {
+    varchar id PK
+    varchar name
+    datetime created_at
+    datetime update_at
+  }
+
+    TB_REVIEW {
+    varchar id PK
+    varchar rating
+    varchar place_id FK "reference TB_PLACE id"
+    varchar user_id FK "reference TB_USER id"
+    datetime created_at
+    datetime update_at
+    }
+
+    TB_PLACE_AMENITY {
+    varchar place_id FK "reference TB_PLACE id"
+    varchar amenity_id FK "reference TB_AMENITY id"
+    datetime created_at
+    datetime update_at
+    }
