@@ -1,5 +1,11 @@
 from abc import ABC, abstractmethod
-from app.extensions import db 
+from app.extensions import db
+from app.models.user import User
+from app.models.place import Place
+from app.models.amenity import Amenity, PlaceAmenity
+from app.models.review import Review
+from sqlalchemy.orm import subqueryload
+from sqlalchemy.orm import joinedload
 
 class Repository(ABC):
     @abstractmethod
@@ -88,4 +94,32 @@ class SQLAlchemyRepository(Repository):
 
     def get_by_attribute(self, attr_name, attr_value):
         return self.model.query.filter_by(**{attr_name: attr_value}).first()
+
+
+class UserRepository(SQLAlchemyRepository):
+    def __init__(self):
+        super().__init__(User)
+
+    def get_user_by_email(self, email):
+        return self.model.query.filter_by(email=email).first()
+
+
+class PlaceRepository(SQLAlchemyRepository):
+    def __init__(self):
+        super().__init__(Place)
+
+
+class AmenityRepository(SQLAlchemyRepository):
+    def __init__(self):
+        super().__init__(Amenity)
+
+
+class PlaceAmenityRepository(SQLAlchemyRepository):
+    def __init__(self):
+        super().__init__(PlaceAmenity)
+
+
+class ReviewRepository(SQLAlchemyRepository):
+    def __init__(self):
+        super().__init__(Review)
 
