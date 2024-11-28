@@ -1,9 +1,5 @@
 # from app.persistence.repository import InMemoryRepository
-from app.persistence.repository import SQLAlchemyRepository
-from app.services.repositories.user_repository import UserRepository
-from app.services.repositories.place_repository import PlaceRepository
-from app.services.repositories.review_repository import ReviewRepository
-from app.services.repositories.amenity_repository import AmenityRepository
+from app.persistence.repository import UserRepository, PlaceRepository, ReviewRepository, AmenityRepository
 from app.models.user import User
 from app.models.amenity import Amenity
 from app.models.place import Place
@@ -78,7 +74,7 @@ class HBnBFacade:
             raise NotFoundError("Amenity not found")
         amenity.update(amenity_data)
         self.amenity_repo.update(amenity_id, amenity)
-        # self.amenity_repo.update(amenity_id, amenity_data)
+
         return amenity
 
     """PLACE CONFIG"""
@@ -99,69 +95,76 @@ class HBnBFacade:
         amenities = place_data.pop('amenities', [])
 
         place = Place(**place_data, owner_id=auth_user_id)
-    
+
         for amenity_id in amenities:
             amenity = self.amenity_repo.get(amenity_id)
             if not amenity:
                 raise ValueError(f"Invalid data: Amenity with ID {amenity_id} not found")
             place.add_amenity(amenity_id)
-    
+
         self.place_repo.add(place)
 
         print(f"Place created successfully: {place.id}")
 
-        place_dict = self.to_dict_place(place)
+        place_dict = self.place_repo.get(place.id)
 
         return place_dict
 
 
     def to_dict_place(self, place_data):
-        place_dict = place_data.to_dict()
-        owner_id = place_dict.pop('owner_id')
-        print(f'owner_id: {owner_id}')
-        # # amenities = place_dict.pop('amenities')
-        # # reviews = place_dict.pop('reviews')
+        return_dict = {
+            'id': place_data.id,
+            'title': place_data.title,
+            'description': place_data.description,
+            'price': place_data.price,
+            'latitude': place_data.latitude,
+            'longitude': place_data.longitude,
+            'owner_id': place_data.owner_id
+        }
 
-        owner = self.user_repo.get(owner_id)
+        owner = place_data.owner
         owner_dict = {
-            "owner_id": owner_id,
+            "owner_id": owner.id,
             "first_name": owner.first_name,
             "last_name": owner.last_name,
             "email": owner.email
         }
+        return_dict.setdefault("owner", owner_dict)
 
-        place_dict.setdefault("owner", owner_dict)
+        amenities_list = []
+        for place_amenity in place_data.amenity_place:
+            amenity_dict = {
+                "amenity_id": place_amenity.amenity_id,
+                "name": place_amenity.amenity.name
+            }
+            amenities_list.append(amenity_dict)
 
-        # # amenities_list = []
-        # # for amenity_id in amenities:
-        # #     amenity = self.amenity_repo.get(amenity_id)
-        # #     amenity_dict = {
-        # #         "amenity_id": amenity_id,
-        # #         "name": amenity.name
-        # #     }
-        # #     amenities_list.append(amenity_dict)
+        return_dict.setdefault("amenities", amenities_list)
 
-        # # place_dict.setdefault("amenities", amenities_list)
-        # # place_dict.setdefault("reviews", reviews)
+        review_list = []
+        for review in place_data.tb_review:
+            review_dict = {
+                "review_id": review.id,
+                "text": review.text,
+                "rating": review.rating,
+                # "place_id": review.place_id,
+                "user_id": review.user_id
+            }
+            review_list.append(review_dict)
+        return_dict.setdefault("reviews", review_list)
+        return return_dict
 
-        return place_dict
 
-
-    def get_place(self, place_id): #works
-        place_dict = self.place_repo.get(place_id)
-        # if place_dict:
-        #     place_dict = self.to_dict_place(place_dict)
-
-        return place_dict
+    def get_place(self, place_id):
+        place_data = self.place_repo.get(place_id)
+        return place_data
 
     def get_all_places(self):
         places = self.place_repo.get_all()
         return [self.to_dict_place(place) for place in places]
 
     def update_place(self, place_id, place_data):
-        place = self.get_place(place_id)
-        if not place:
-            raise NotFoundError("Place not found")
+        place = self.place_repo.get(place_id)
 
         # check owner_id
         if 'owner_id' in place_data:
@@ -171,10 +174,8 @@ class HBnBFacade:
             if not owner_up.is_owner:
                 raise ValueError("Owner not authorized to create places")
 
-
         amenities = place_data.pop('amenities', [])
 
-        # place.update(place_data, owner=owner.to_dict())
         place.update(place_data)
 
         place.amenities = []
@@ -191,7 +192,7 @@ class HBnBFacade:
     def delete_place(self, place_id, auth_user_id, auth_is_admin):
         place = self.get_place(place_id)
         if not place:
-            raise NotFoundError("Review not found")
+            raise NotFoundError("Place not found")
 
         if not auth_is_admin and place.owner_id != auth_user_id:
             raise AuthError("Unauthorized action.")
@@ -231,11 +232,11 @@ class HBnBFacade:
         """New review"""
         new_review = Review(**review_data, user_id=auth_user_id)
 
-        self.review_repo.add(new_review)
-
-        # # """ add review to place review_list """
+        """ add review to place review_list """
         # # place.add_review(new_review.id)
         # # self.place_repo.update(place_id, place)
+
+        self.review_repo.add(new_review)
 
         return new_review
 
