@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Place Details</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="scripts.js"></script>
+</head>
+<body>
+    <div class="container">
+    <header>
+        <div class="logo">
+            <a href="index.html">
+                <img src="../images/logo.png" alt="Logo Hbnb">
+            </a>
+        </div>
+        <nav>
+            <div class="login-button">
+                <a href="login.html" id="login-link">Login</a>
+            </div>
+        </nav>
+    </header>
+    <main>
+        <section id="place-details">
+            <!-- <p>Beautiful Beach House</p>
+            <div>
+                <ul class="place-info">
+                    <li><span>Host:</span> John Doe</li>
+                    <li><span>Price per night:</span> $150</li>
+                    <li><span>Description:</span> A beautiful beach house with amazing views</li>
+                    <li><span>Amenities:</span> Wifi, Pool, Air Conditioning</li>
+                </ul>
+            </div> -->
+        </section>
+        <section id="reviews">
+            <!-- <h2 class="review-h2">Reviews</h2>
+            <div>
+                <ul class="review-card">
+                    <li><span>Jane Smith:</span></li>
+                    <li>Great place to stay!</li>
+                    <li>Rating: ★★★★☆</li>
+                </ul>
+                <ul class="review-card">
+                    <li><span>Robert Brown:</span></li>
+                    <li>Amazing location and very comfortable</li>
+                    <li>Rating: ★★★★★</li>
+                </ul>
+            </div> -->
+        </section>
+        <section id="add-review">
+            <h2 class="review-h2">Add a Review</h2>
+            <form id="review-form">
+                <ul class="ul_review">
+                    <li>
+                        <label for="review-text">Your Review:</label>
+                        <textarea id="review-text" name="review-text" required></textarea>
+                    </li>
+                    <li>
+                        <label for="review-rating">Rating:</label>
+                        <select id="review-filter">
+                            <option value=""></option>
+                            <option value="1">1 Star</option>
+                            <option value="2">2 Stars</option>
+                            <option value="3">3 Stars</option>
+                            <option value="4">4 Stars</option>
+                            <option value="5">5 Stars</option>
+                        </select>
+                    </li>
+                    <li class="submit-button">
+                        <button type="submit">Submit Review</button>
+                    </li>
+                </ul>
+            </form>
+        </section>
+    </main>
+    <footer>
+        <p>© 2024 HBnB Evolution. All Rights Reserved.</p>
+    </footer>
+    </div>
+</body>
+</html>
