@@ -16,7 +16,8 @@ def create_app(config_class="config.DevelopmentConfig"):
     app = Flask(__name__)
     
     app.config.from_object(config_class)
-    cors = CORS(app, resources={r"/*": {"origins": "http://localhost:5500", "allow_headers": "Content-Type"}})
+    cors = CORS(app, resources={r"/*": {"origins": "http://localhost:5500"}})
+    # cors = CORS(app, resources={r"/*": {"origins": "http://localhost:5500", "allow_headers": "Content-Type"}})
 
     bcrypt.init_app(app)
     jwt.init_app(app)
