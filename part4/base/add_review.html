@@ -1,60 +1,23 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Review</title>
-    <link rel="stylesheet" href="styles.css">
-    <script src="scripts.js"></script></head>
-<body>
-    <div class="container">
-        <header>
-            <div class="logo">
-                <a href="index.html">
-                    <img src="../images/logo.png" alt="Logo Hbnb">
-                </a>
-            </div>
-            <nav>
-                <div class="login-button">
-                    <a href="login.html" id="login-link">Login</a>
-                </div>
-            </nav>
-        </header>
-        <main>
-            <section id="add-review-title">
-                <h1>Reviewing: Beautiful Beach House</h1>
-            </section>
-
-            <!-- Add something to idfentify the place you're reviewing -->
-            <section id="add-review">
-                <h2 id="review-h2">Add a Review</h2>
-                <form id="review-form">
-                    <ul class="ul_review">
-                        <li>
-                            <label for="review-text">Your Review:</label>
-                            <textarea id="review-text" name="review-text" required></textarea>
-                        </li>
-                        <li>
-                            <label for="review-rating">Rating:</label>
-                            <select id="review-filter">
-                                <option value=""></option>
-                                <option value="1_star">1 Star</option>
-                                <option value="2_star">2 Stars</option>
-                                <option value="3_star">3 Stars</option>
-                                <option value="4_star">4 Stars</option>
-                                <option value="5_star">5 Stars</option>
-                            </select>
-                        </li>
-                        <li class="submit-button">
-                            <button type="submit">Submit Review</button>
-                        </li>
-                    </ul>
-                </form>
-            </section>
-        </main>
-        <footer>
-            <p>© 2024 HBnB Evolution. All Rights Reserved.</p>
-        </footer>
-    </div>
-</body>
-</html>
+<h2 id="review-h2">Add a Review</h2>
+<form id="review-form">
+    <ul class="ul_review">
+        <li>
+            <label for="review-text">Your Review:</label>
+            <textarea id="review-text" name="review-text" required></textarea>
+        </li>
+        <li>
+            <label for="review-rating">Rating:</label>
+            <select id="review-filter">
+                <option value=""></option>
+                <option value="1">1 Star</option>
+                <option value="2">2 Stars</option>
+                <option value="3">3 Stars</option>
+                <option value="4">4 Stars</option>
+                <option value="5">5 Stars</option>
+            </select>
+        </li>
+        <li class="submit-button">
+            <button type="submit">Submit Review</button>
+        </li>
+    </ul>
+</form>

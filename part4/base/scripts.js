@@ -1,3 +1,5 @@
+
+
 async function loginUser(email, password) {
 
    const response = await fetch('http://localhost:5000/api/v1/auth/login', {
@@ -297,11 +299,10 @@ async function submitReview(token, placeId, reviewText, reviewRating) {
 
   const headers = {
     'Content-Type': 'application/json',
-    'Accept': 'application/json',
-    "Authorization": "Bearer "+getCookie('token')
+    'Accept': 'application/json'
   };
 
-// headers['Authorization'] = `Bearer ${token}`;
+headers['Authorization'] = `Bearer ${token}`;
 
   const response = await fetch('http://localhost:5000/api/v1/reviews/', {
     method: 'POST',
@@ -310,8 +311,8 @@ async function submitReview(token, placeId, reviewText, reviewRating) {
       place_id: placeId,
       text: reviewText,
       rating: reviewRating
-    }),
-    mode: 'cors'
+    })
+
   });
 // Handle the response
   if (response.ok) {
@@ -322,17 +323,58 @@ async function submitReview(token, placeId, reviewText, reviewRating) {
     const form = document.getElementById('review-form');
     form.reset();
   } else {
-    alert('Failed to submit review: ' + response.statusText);
-  }
+      const errorData = await response.json();
+      console.error('Error:', errorData); 
+      if(errorData.message){ 
+        alert('Failed to submit review: ' +errorData.message);
+      } else {
+        alert('Failed to submit review: ' +errorData.msg);
+      }
+      // alert('Failed to submit review: ' + response.statusText);
+    }
 }
-
-
 
 
 //---------------------------------------------------------------------//
 
 
 document.addEventListener('DOMContentLoaded', () => {
+
+
+  const includeHeader = new XMLHttpRequest();
+  includeHeader.open("GET", "header.html", true);
+  includeHeader.onreadystatechange = function () {
+    if (includeHeader.readyState === 4 && includeHeader.status === 200) {
+      const headerHTML = includeHeader.responseText;
+      const header = document.querySelector("header");
+      header.insertAdjacentHTML("afterbegin", headerHTML);
+    }
+  };
+  includeHeader.send();
+
+  const includefooter = new XMLHttpRequest();
+  includefooter.open("GET", "footer.html", true);
+  includefooter.onreadystatechange = function () {
+    if (includefooter.readyState === 4 && includefooter.status === 200) {
+      const footerHTML = includefooter.responseText;
+      const footer = document.querySelector("footer");
+      footer.insertAdjacentHTML("afterbegin", footerHTML);
+    }
+  };
+  includefooter.send();
+
+  const includeaddReview = new XMLHttpRequest();
+  includeaddReview.open("GET", "add_review.html", true);
+  includeaddReview.onreadystatechange = function () {
+    if (includeaddReview.readyState === 4 && includeaddReview.status === 200) {
+      const addReviewHTML = includeaddReview.responseText;
+      const addReview = document.querySelector("#add-review");
+      addReview.insertAdjacentHTML("afterbegin", addReviewHTML);
+    }
+  };
+  includeaddReview.send();
+
+
 
   const token = checkAuthentication();
   let filter_price = 0;
@@ -393,7 +435,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const reviewText = document.getElementById('review-text').value;
         const reviewRating = document.getElementById('review-filter').value;
 
-        await submitReview(token, placeId, reviewText, reviewRating);
+        await submitReview(token, placeId, reviewText, Number(reviewRating));
 
     });
   }
